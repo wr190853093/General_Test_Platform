@@ -1,0 +1,25 @@
+.navbar{
+    min-height: 20px;
+    border: 0;
+    padding-top: 3px;
+}
+.navbar-default{
+    background-color: #204d74;
+}
+
+.main-sidebar{
+    /*position: absolute;*/
+    /*top: 150;*/
+    padding-left: 0px;
+    left: 0;
+    height: 100%;
+    min-height: 100%;
+    width: 230px;
+    z-index: 810;
+    background-color: #222d32;
+ }
+
+.search-col{
+    padding-right: 5px;
+}
+

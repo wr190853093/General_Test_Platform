@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+<head>
+    {% block css_static %}
+    <link rel="stylesheet" href="{% static  'css/bootstrap-treeview.css' %}">
+    {% endblock %}
+    {% block js_static %}
+    <script src="{% static 'js/bootstrap-treeview.js' %}"></script>
+    {% endblock %}
+</head>
+{% block page %}
+    <div class="row">
+        <div class="col-md-5 col-lg-5" id="pro" style="background-color: #fcf8e3;height: 550px;overflow-y :scroll">
+        树展示区
+            {% block treezone %}
+
+            {% endblock %}
+
+        </div>
+        <div class="col-md-4 col-lg-5" style="background-color: #f2dede; height: 550px;">
+        编辑区
+            {% block editzone %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}

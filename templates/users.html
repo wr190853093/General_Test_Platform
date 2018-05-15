@@ -1,0 +1,75 @@
+{% extends 'list_base.html' %}
+{% block search %}
+
+<head>
+</head>
+<body>
+<form class="form-inline">
+    <div class="form-group col-md-3 col-lg-3 search-col">
+        <label for="name">姓名</label>
+        <input type="text" class="form-control" id="name" >
+    </div>
+    <div class="form-group col-md-3 col-lg-3 search-col">
+        <label for="username">用户名</label>
+        <input type="text" class="form-control" id="username">
+    </div>
+    <div class="form-group col-md-3 col-lg-3 search-col">
+        <label for="orgname">部门</label>
+        <select class="form-control selectpicker" id="orgname">
+            <option>开发组</option>
+            <option>测试组</option>
+        </select>
+    </div>
+    <button class="btn btn-success">查询</button>
+</form>
+{% endblock %}
+
+{% block list %}
+    <div class="row">
+        <button class="btn btn-primary" >新增</button>
+        <button class="btn btn-warning" >启用</button>
+        <button class="btn btn-danger" >禁用</button>
+    </div>
+    <div class="row" style="margin-top: 10px">
+        <table class="table table-bordered table-hover">
+            {% for user in users%}
+                {% if forloop.first %}
+                    <thead>
+                        <th><input type="checkbox" class="checkbox"></th>
+                        <th>ID</th>
+                        <th>姓名</th>
+                        <th>用户名</th>
+                        <th>邮箱</th>
+                        <th>部门</th>
+                        <th>角色</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </thead>
+                {% endif %}
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" class="checkbox"></td>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.name }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.orgname }}</td>
+                            <td>{{ user.role }}</td>
+                            <td>{{ user.stats }}</td>
+                            <td>
+                                <a class="btn btn-warning btn-sm"><i class="fa fa-edit"></i>修改</a>
+                                <button class="btn btn-success btn-sm"><i class="fa fa-refresh"></i>重置密码</button>
+                                <button class="btn btn-danger btn-sm"><i class="fa fa-trash"></i>删除</button>
+                            </td>
+                        </tr>
+                    </tbody>
+            {% empty %}
+                <tr>
+                    <td>信息为空</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
+</body>
+
