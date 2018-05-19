@@ -12,7 +12,7 @@ class Organization(models.Model):
         return self.name
 
 
-class User(models.Model):
+class Users(models.Model):
     name = models.CharField(max_length=15)
     username = models.CharField(max_length=20, unique=True, null=False)
     email = models.EmailField()

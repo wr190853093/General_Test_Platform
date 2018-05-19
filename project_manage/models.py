@@ -6,7 +6,7 @@ from author_manage.models import *
 class Project(models.Model):
     name = models.CharField(max_length=30, null=False)
     status = models.SmallIntegerField(choices=((0, u'禁用'), (1, u'启用')), null=False)
-    team = models.ManyToManyField(User)
+    team = models.ManyToManyField(Users)
 
     def __unicode__(self):
         return self.name
@@ -77,6 +77,6 @@ class ResponsePara(models.Model):
 
 
 class ComplexPara(models.Model):
-    parent_para = models.ForeignKey(Parameter)
-    chirld_para = models.ForeignKey(Parameter)
+    parent_para = models.ForeignKey(Parameter, related_name='parent_para')
+    chirld_para = models.ForeignKey(Parameter, related_name='chirld_para')
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=True)

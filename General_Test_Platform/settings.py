@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'General_Test_Platform.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'GPT',
+        'NAME': 'GTP',
         'USER': 'root',
         'PASSWORD': '123#abc'
     }

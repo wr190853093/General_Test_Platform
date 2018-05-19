@@ -8,7 +8,7 @@ class Case(models.Model):
     name = models.CharField(max_length=30, null=False)
     status = models.SmallIntegerField(choices=((0, u'跳过'), (1, u'启用')), null=False)
     desc = models.CharField(max_length=30, null=False)
-    project = models.Model(Project)
+    project = models.ForeignKey(Project)
 
     def __unicode__(self):
         return self.name
@@ -17,8 +17,8 @@ class Case(models.Model):
 class Step(models.Model):
     name = models.CharField(max_length=30, null=False)
     desc = models.CharField(max_length=30, null=False)
-    case = models.Model(Case)
-    api = models.Model(Api)
+    case = models.ForeignKey(Case)
+    api = models.ForeignKey(Api)
     order = models.IntegerField(null=False, default=1)
     para = models.ForeignKey(Parameter)
     para_type = models.SmallIntegerField(choices=((10, 'herader para'), (21, 'body para urlencoded'), (22, 'body para json')), null=False)
