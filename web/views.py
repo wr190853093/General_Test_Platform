@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 
 def org(request):
-    return render(request, 'users.html')
+    return render(request, 'org.html')
 
 
 def users(request):
