@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'^deleteorg/', 'author_manage.views.delete_org'),
     url(r'^editorg/', 'author_manage.views.edit_org'),
     url(r'^getorgtree/', 'author_manage.views.org_tree'),
-    url(r'^getorginfo/', 'author_manage.views.org_info'),
+    # url(r'^getorginfo/', 'author_manage.views.org_info'),
     url(r'^creatuser/', 'author_manage.views.creat_user'),
     url(r'^deleteuser/', 'author_manage.views.delete_user'),
     url(r'^edituser/', 'author_manage.views.edit_user'),
