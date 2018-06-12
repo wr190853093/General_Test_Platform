@@ -125,20 +125,25 @@ def get_childtree(parent):
     child = Organization.objects.filter(parent=parent.id)
     for c in child:
         get_childtree(c)
-        pass
+    pass
+
 
 
 @api_view(['GET', 'POST'])
 def org_tree(request):
     error_code = ''
     message = ''
-    data = {}
+    data = []
     root = Organization.objects.filter(parent__isnull=True)
-    for p in root:
-        child = Organization.objects.filter(parent=p.id)
-        for c in child:
-            pass
 
+    # for p in root:
+    #     child = Organization.objects.filter(parent=p.id)
+    #     for c in child:
+    #         pass
+    # data = [{'parent_name': parent.name, 'parent_id': parent.id,
+    #           'nodes':[{'child1_name': child1.name, 'child1_id': child1.id},
+    #                  {'child2_name': child2.name, 'child2_id': child2.id, 'nodes':[...]}
+    #           ]}]
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
 
