@@ -121,21 +121,13 @@ def edit_org(request):
     return JsonResponse(resp)
 
 
-def get_childtree(parent):
-    child = Organization.objects.filter(parent=parent.id)
-    for c in child:
-        get_childtree(c)
-    pass
-
-
-
 @api_view(['GET', 'POST'])
 def org_tree(request):
     error_code = ''
     message = ''
     data = []
     root = Organization.objects.filter(parent__isnull=True)
-
+    child = root.get_children()
     # for p in root:
     #     child = Organization.objects.filter(parent=p.id)
     #     for c in child:
