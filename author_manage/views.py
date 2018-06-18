@@ -19,7 +19,7 @@ def creat_org(request):
                 parent = Organization.objects.filter(id=parent_id, is_del='1')
                 if parent.exists():
                     if not Organization.objects.filter(parent=parent, name=name, is_del='1').exists():
-                        org = Organization(name=name, is_del=is_del, parent=parent_id)
+                        org = Organization(name=name, is_del=is_del, parent=parent.first())
                         org.save()
                         error_code = '0'
                         message = u'新增组织机构成功。'
@@ -32,7 +32,7 @@ def creat_org(request):
                     message = u'不存在父节点组织机构。'
             except Exception as e:
                 print e.message
-                error_code = '10099'
+                error_code = '10098'
                 message = u'数据操作异常。'
         else:
             try:
@@ -53,8 +53,10 @@ def creat_org(request):
         error_code = '10001'
         message = u'存在必填项为空.'
 
-    resp = {'error_code': error_code, 'message': message, 'data': data}
+    resp = {'error_code': error_code, 'message': message, 'org_id': data}
     return JsonResponse(resp)
+    # js = json.dumps(resp, ensure_ascii=False)
+    # return HttpResponse(js)
 
 
 @api_view(['GET', 'POST'])
@@ -121,28 +123,57 @@ def edit_org(request):
     return JsonResponse(resp)
 
 
+def get_child(parent):
+    result = {}
+
+    data = {}
+    node = []
+    child = parent.get_children().filter(is_del='1')
+    data['parent_id'] = parent.id
+    data['parent_name'] = parent.name
+    for c in child:
+        ch = {}
+        print c
+        ch['child_name'] = c.name
+        ch['id'] = c.id
+        ch['parent_id'] = c.parent_id
+        node.append(ch)
+        if c.get_children().filter(is_del='1').exists():
+            get_child(c)
+    print node
+    result['parent']=data
+    result['child']=node
+    return result
+
+get_child(root[0])
+
 @api_view(['GET', 'POST'])
 def org_tree(request):
     error_code = ''
     message = ''
     data = []
-    root = Organization.objects.filter(parent__isnull=True)
-    child = root.get_children()
-    # for p in root:
-    #     child = Organization.objects.filter(parent=p.id)
-    #     for c in child:
-    #         pass
-    # data = [{'parent_name': parent.name, 'parent_id': parent.id,
+    root = Organization.objects.filter(parent__isnull=True, is_del='1')
+    for r in root:
+        child = r.get_children().filter(is_del='1')
+        parent_name = r.name
+        parent_id = r.id
+        for c in child:
+            print c.id
+            print c.name
+            print c.parent_id
+
+    # data = {'org':[{'parent_name': parent.name, 'parent_id': parent.id,
     #           'nodes':[{'child1_name': child1.name, 'child1_id': child1.id},
     #                  {'child2_name': child2.name, 'child2_id': child2.id, 'nodes':[...]}
-    #           ]}]
+    #           ]}]}
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
 
 
-# @api_view(['GET', 'POST'])
-# def org_info(request):
-#     pass
+@api_view(['GET', 'POST'])
+def org_info(request):
+    # return HttpResponse('1')
+    pass
 
 
 @api_view(['POST'])
@@ -168,5 +199,3 @@ def user_list(request):
 @api_view(['GET', 'POST'])
 def user_info(request):
     pass
-
-
