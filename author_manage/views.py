@@ -123,54 +123,45 @@ def edit_org(request):
     return JsonResponse(resp)
 
 
-def get_child(parent):
-    result = {}
-
-    data = {}
-    node = []
-    child = parent.get_children().filter(is_del='1')
-    data['parent_id'] = parent.id
-    data['parent_name'] = parent.name
+def get_child(parent, result={}, data={}, node=[]):
+    child = parent.get_children().filter(is_del='1', tree_id=parent.tree_id)
     for c in child:
         ch = {}
-        print c
         ch['child_name'] = c.name
         ch['id'] = c.id
         ch['parent_id'] = c.parent_id
         node.append(ch)
         if c.get_children().filter(is_del='1').exists():
-            get_child(c)
-    print node
-    result['parent']=data
-    result['child']=node
+            get_child(c, node=node)
+    data['toporg_id'] = parent.id
+    data['toporg_name'] = parent.name
+    result['toporg'] = data
+    result['node'] = node
     return result
 
-get_child(root[0])
 
 @api_view(['GET', 'POST'])
 def org_tree(request):
     error_code = ''
     message = ''
     data = []
-    root = Organization.objects.filter(parent__isnull=True, is_del='1')
-    for r in root:
-        child = r.get_children().filter(is_del='1')
-        parent_name = r.name
-        parent_id = r.id
-        for c in child:
-            print c.id
-            print c.name
-            print c.parent_id
-
-    # data = {'org':[{'parent_name': parent.name, 'parent_id': parent.id,
-    #           'nodes':[{'child1_name': child1.name, 'child1_id': child1.id},
-    #                  {'child2_name': child2.name, 'child2_id': child2.id, 'nodes':[...]}
-    #           ]}]}
+    try:
+        root = Organization.objects.filter(parent__isnull=True, is_del='1')
+        for r in root:
+            org = get_child(r, result={}, data={}, node=[])
+            data.append(org)
+        error_code = '0'
+        message = u'获取组织机构树成功。'
+    except Exception as e:
+        print e.message
+        error_code = '10099'
+        message = u'数据操作异常。'
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
 
 
 @api_view(['GET', 'POST'])
+# 暂时不要该接口
 def org_info(request):
     # return HttpResponse('1')
     pass
