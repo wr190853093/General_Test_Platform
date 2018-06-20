@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^edituser/', 'author_manage.views.edit_user'),
     url(r'^getuserlist/', 'author_manage.views.user_list'),
     url(r'^getuserinfo/', 'author_manage.views.user_info'),
+    url(r'^editpwd/', 'author_manage.views.edit_password'),
 ]

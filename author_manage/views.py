@@ -77,7 +77,7 @@ def delete_org(request):
                     message = u'请先删除子节点组织机构再删除父节点组织机构。'
             else:
                 error_code = '10004'
-                message = u'所选组织组织机构不存在。'
+                message = u'所选组织机构不存在。'
         except Exception as e:
             print e.message
             error_code = '10099'
@@ -110,7 +110,7 @@ def edit_org(request):
                     message = u'同节点组织机构名称重复。'
             else:
                 error_code = '10004'
-                message = u'所选组织组织机构不存在。'
+                message = u'所选组织机构不存在。'
         except Exception as e:
             print e.message
             error_code = '10099'
@@ -169,7 +169,51 @@ def org_info(request):
 
 @api_view(['POST'])
 def creat_user(request):
-    pass
+    name = request.POST.get('name', None)
+    username = request.POST.get('username', None)
+    email = request.POST.get('email', None)  # 前台进行邮箱格式校验，后台不做校验了
+    org = request.POST.get('org', None)
+    role = request.POST.get('role', None)
+    password = request.POST.get('password', None)  # 前台进行加密后传给后台，后台不做加密处理，避免通过抓包获取密码
+    is_del = '1'
+    status = '1'
+    data = ''
+    if name and username and org and password and role:
+        try:
+            role = int(role)
+            if role in [0, 1, 2, 3]:
+                try:
+                    organize = Organization.objects.filter(id=org, is_del='1')
+                    if organize.exists():
+                        if not Users.objects.filter(username=username).exists():
+                            user = Users(name=name, username=username, email=email, org=organize.first(),
+                                         role=role, password=password, is_del=is_del, status=status)
+                            user.save()
+                            error_code = '0'
+                            message = u'新增员工成功。'
+                            data = user.id
+                        else:
+                            error_code = '10006'
+                            message = u'用户名已经存在。'
+                    else:
+                        error_code = '10004'
+                        message = u'所选组织机构不存在。'
+                except Exception as e:
+                    print e.message
+                    error_code = '10098'
+                    message = u'数据操作异常。'
+            else:
+                error_code = '10005'
+                message = u'用户角色错误。'
+        except:
+            error_code = '10005'
+            message = u'用户角色错误。'
+    else:
+        error_code = '10001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message, 'user_id': data}
+    return JsonResponse(resp)
 
 
 @api_view(['GET', 'POST'])
@@ -189,4 +233,9 @@ def user_list(request):
 
 @api_view(['GET', 'POST'])
 def user_info(request):
+    pass
+
+
+@api_view(['POST'])
+def edit_password(request):
     pass
