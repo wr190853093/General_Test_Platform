@@ -295,25 +295,145 @@ def edit_user(request):
 @api_view(['POST'])
 # 根据userid修改状态
 def enable_user(request):
-    pass
+    user_id = request.POST.get('userid', None)
+    if user_id:
+        try:
+            user = Users.objects.filter(id=user_id, is_del=1)
+            if user.exists():
+                if user.first().status == 0:
+                    user.update(status=1)
+                    error_code = '0'
+                    message = u'修改员工状态成功。'
+                else:
+                    error_code = '10008'
+                    message = u'所选员工已为在职状态。'
+            else:
+                error_code = '10007'
+                message = u'所选员工不存在。'
+        except Exception as e:
+            print e.message
+            error_code = '10098'
+            message = u'数据操作异常。'
+    else:
+        error_code = '10001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message}
+    return JsonResponse(resp)
 
 
 @api_view(['POST'])
 # 根据userid修改状态
 def unenable_user(request):
-    pass
+    user_id = request.POST.get('userid', None)
+    if user_id:
+        try:
+            user = Users.objects.filter(id=user_id, is_del=1)
+            if user.exists():
+                if user.first().status == 1:
+                    user.update(status=0)
+                    error_code = '0'
+                    message = u'修改员工状态成功。'
+                else:
+                    error_code = '10009'
+                    message = u'所选员工已为离职状态。'
+            else:
+                error_code = '10007'
+                message = u'所选员工不存在。'
+        except Exception as e:
+            print e.message
+            error_code = '10098'
+            message = u'数据操作异常。'
+    else:
+        error_code = '10001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message}
+    return JsonResponse(resp)
 
 
 @api_view(['GET', 'POST'])
 def user_list(request):
-    pass
+    error_code = ''
+    message = ''
+    data = []
+    try:
+        users = Users.objects.filter(is_del=1).order_by('id')
+        for u in users:
+            user = {}
+            user['id'] = u.id
+            user['name'] = u.name
+            user['username'] = u.username
+            user['email'] = u.email
+            user['org'] = u.org.name
+            user['role'] = u.get_role_display()
+            user['status'] = u.get_status_display()
+            data.append(user)
+        error_code = '0'
+        message = u'获取员工列表成功。'
+    except Exception as e:
+        print e.message
+        error_code = '10099'
+        message = u'数据操作异常。'
+    resp = {'error_code': error_code, 'message': message, 'data': data}
+    return JsonResponse(resp)
 
 
 @api_view(['GET', 'POST'])
 def user_info(request):
-    pass
+    error_code = ''
+    message = ''
+    user_id = request.REQUEST.get('userid', None)
+    data = []
+    if user_id:
+        try:
+            users = Users.objects.filter(is_del=1, id=user_id)
+            if users.exists():
+                u = users.first()
+                user = {}
+                user['id'] = u.id
+                user['name'] = u.name
+                user['username'] = u.username
+                user['email'] = u.email
+                user['org'] = u.org.name
+                user['role'] = u.get_role_display()
+                data.append(user)
+                error_code = '0'
+                message = u'获取员工信息成功。'
+            else:
+                error_code = '10007'
+                message = u'所选员工不存在。'
+        except Exception as e:
+            print e.message
+            error_code = '10099'
+            message = u'数据操作异常。'
+    else:
+        error_code = '10001'
+        message = u'存在必填项为空.'
+    resp = {'error_code': error_code, 'message': message, 'data': data}
+    return JsonResponse(resp)
 
 
 @api_view(['POST'])
 def edit_password(request):
-    pass
+    user_id = request.REQUEST.get('userid', None)
+    pwd = request.POST.get('password', None)
+    if user_id and pwd:
+        try:
+            users = Users.objects.filter(is_del=1, id=user_id)
+            if users.exists():
+                users.update(password=pwd)
+                error_code = '0'
+                message = u'重置密码成功。'
+            else:
+                error_code = '10007'
+                message = u'所选员工不存在。'
+        except Exception as e:
+            print e.message
+            error_code = '10099'
+            message = u'数据操作异常。'
+    else:
+        error_code = '10001'
+        message = u'存在必填项为空.'
+    resp = {'error_code': error_code, 'message': message}
+    return JsonResponse(resp)
