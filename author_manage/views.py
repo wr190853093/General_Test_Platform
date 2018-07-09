@@ -354,11 +354,20 @@ def unenable_user(request):
 
 @api_view(['GET', 'POST'])
 def user_list(request):
+    org = request.REQUEST.get('orgid', None)
     error_code = ''
     message = ''
     data = []
     try:
-        users = Users.objects.filter(is_del=1).order_by('id')
+        if org:
+            organize = Organization.objects.filter(id=org, is_del=1)
+            if organize.exists():
+                users = Users.objects.filter(org=organize.first(), is_del=1)
+            else:
+                error_code = '10004'
+                message = u'所选组织机构不存在。'
+        else:
+            users = Users.objects.filter(is_del=1).order_by('id')
         for u in users:
             user = {}
             user['id'] = u.id
