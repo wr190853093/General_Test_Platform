@@ -61,9 +61,16 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=30)),
-                ('parent', models.IntegerField(null=True)),
                 ('is_del', models.SmallIntegerField(default=1, choices=[(0, '\u5df2\u5220\u9664'), (1, '\u672a\u5220\u9664')])),
+                ('lft', models.PositiveIntegerField(editable=False, db_index=True)),
+                ('rght', models.PositiveIntegerField(editable=False, db_index=True)),
+                ('tree_id', models.PositiveIntegerField(editable=False, db_index=True)),
+                ('level', models.PositiveIntegerField(editable=False, db_index=True)),
+                ('parent', models.ForeignKey(blank=True, to='project_manage.Module', null=True)),
             ],
+            options={
+                'abstract': False,
+            },
         ),
         migrations.CreateModel(
             name='Parameter',

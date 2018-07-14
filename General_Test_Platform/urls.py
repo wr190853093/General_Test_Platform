@@ -19,7 +19,6 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^web/', include('web.urls')),  # 页面路由，所有页面跳转走该app，为前后端分离准备，下方模块均为只提供接口
     url(r'^api_author/', include('author_manage.urls')),
     url(r'^api_project/', include('project_manage.urls')),
     url(r'^api_ceshi/', include('ceshi_manage.urls')),

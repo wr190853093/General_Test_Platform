@@ -32,7 +32,7 @@ def creat_org(request):
                     message = u'不存在父节点组织机构。'
             except Exception as e:
                 print e.message
-                error_code = '10098'
+                error_code = '99999'
                 message = u'数据操作异常。'
         else:
             try:
@@ -47,10 +47,10 @@ def creat_org(request):
                     message = u'同节点组织机构名称重复。'
             except Exception as e:
                 print e.message
-                error_code = '10099'
+                error_code = '99999'
                 message = u'数据操作异常。'
     else:
-        error_code = '10001'
+        error_code = '90001'
         message = u'存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, 'org_id': data}
@@ -73,17 +73,17 @@ def delete_org(request):
                     error_code = '0'
                     message = u'删除组织机构成功。'
                 else:
-                    error_code = '10001'
+                    error_code = '90001'
                     message = u'请先删除子节点组织机构再删除父节点组织机构。'
             else:
                 error_code = '10004'
                 message = u'所选组织机构不存在。'
         except Exception as e:
             print e.message
-            error_code = '10099'
+            error_code = '99999'
             message = u'数据操作异常。'
     else:
-        error_code = '10001'
+        error_code = '90001'
         message = u'存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
@@ -101,7 +101,7 @@ def edit_org(request):
             org = Organization.objects.filter(id=org_id, is_del=1)
             if org.exists():
                 parent_org = org.first().parent
-                if not Organization.objects.filter(name=name, parent=parent_org, is_del=1).exists():
+                if not Organization.objects.exclude(id=org_id).filter(name=name, parent=parent_org, is_del=1).exists():
                     org.update(name=name)
                     error_code = '0'
                     message = u'编辑组织机构成功。'
@@ -113,10 +113,10 @@ def edit_org(request):
                 message = u'所选组织机构不存在。'
         except Exception as e:
             print e.message
-            error_code = '10099'
+            error_code = '99999'
             message = u'数据操作异常。'
     else:
-        error_code = '10001'
+        error_code = '90001'
         message = u'存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
@@ -154,7 +154,7 @@ def org_tree(request):
         message = u'获取组织机构树成功。'
     except Exception as e:
         print e.message
-        error_code = '10099'
+        error_code = '99999'
         message = u'数据操作异常。'
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
@@ -200,7 +200,7 @@ def creat_user(request):
                         message = u'所选组织机构不存在。'
                 except Exception as e:
                     print e.message
-                    error_code = '10098'
+                    error_code = '99999'
                     message = u'数据操作异常。'
             else:
                 error_code = '10005'
@@ -209,7 +209,7 @@ def creat_user(request):
             error_code = '10005'
             message = u'员工角色错误。'
     else:
-        error_code = '10001'
+        error_code = '90001'
         message = u'存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, 'user_id': data}
@@ -231,10 +231,10 @@ def delete_user(request):
                 message = u'所选员工不存在。'
         except Exception as e:
             print e.message
-            error_code = '10099'
+            error_code = '99999'
             message = u'数据操作异常。'
     else:
-        error_code = '10001'
+        error_code = '90001'
         message = u'存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
@@ -276,7 +276,7 @@ def edit_user(request):
                         message = u'所选组织机构不存在。'
                 except Exception as e:
                     print e.message
-                    error_code = '10098'
+                    error_code = '99999'
                     message = u'数据操作异常。'
             else:
                 error_code = '10005'
@@ -285,7 +285,7 @@ def edit_user(request):
             error_code = '10005'
             message = u'员工角色错误。'
     else:
-        error_code = '10001'
+        error_code = '90001'
         message = u'存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
@@ -312,10 +312,10 @@ def enable_user(request):
                 message = u'所选员工不存在。'
         except Exception as e:
             print e.message
-            error_code = '10098'
+            error_code = '99999'
             message = u'数据操作异常。'
     else:
-        error_code = '10001'
+        error_code = '90001'
         message = u'存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
@@ -342,10 +342,10 @@ def unenable_user(request):
                 message = u'所选员工不存在。'
         except Exception as e:
             print e.message
-            error_code = '10098'
+            error_code = '99999'
             message = u'数据操作异常。'
     else:
-        error_code = '10001'
+        error_code = '90001'
         message = u'存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
@@ -382,7 +382,7 @@ def user_list(request):
         message = u'获取员工列表成功。'
     except Exception as e:
         print e.message
-        error_code = '10099'
+        error_code = '99999'
         message = u'数据操作异常。'
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
@@ -414,10 +414,10 @@ def user_info(request):
                 message = u'所选员工不存在。'
         except Exception as e:
             print e.message
-            error_code = '10099'
+            error_code = '99999'
             message = u'数据操作异常。'
     else:
-        error_code = '10001'
+        error_code = '90001'
         message = u'存在必填项为空.'
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
@@ -439,10 +439,10 @@ def edit_password(request):
                 message = u'所选员工不存在。'
         except Exception as e:
             print e.message
-            error_code = '10099'
+            error_code = '99999'
             message = u'数据操作异常。'
     else:
-        error_code = '10001'
+        error_code = '90001'
         message = u'存在必填项为空.'
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)

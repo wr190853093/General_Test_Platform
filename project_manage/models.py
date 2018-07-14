@@ -2,20 +2,21 @@
 
 from django.db import models
 from author_manage.models import *
+from mptt.models import MPTTModel
 
 
 class Project(models.Model):
     name = models.CharField(max_length=30, null=False)
-    status = models.SmallIntegerField(choices=((0, u'禁用'), (1, u'启用')), null=False, default=1)
+    status = models.SmallIntegerField(choices=((0, u'归档'), (1, u'正常')), null=False, default=1)
     team = models.ManyToManyField(Users)
 
     def __unicode__(self):
         return self.name
 
 
-class Module(models.Model):
+class Module(MPTTModel):
     name = models.CharField(max_length=30, null=False)
-    parent = models.IntegerField(null=True)
+    parent = TreeForeignKey("self", blank=True, null=True, related_name="children")
     project = models.ForeignKey(Project)
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)
 
