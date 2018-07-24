@@ -16,8 +16,8 @@ class Project(models.Model):
 
 class Module(MPTTModel):
     name = models.CharField(max_length=30, null=False)
-    parent = TreeForeignKey("self", blank=True, null=True, related_name="children")
-    project = models.ForeignKey(Project)
+    parent = TreeForeignKey("self", blank=True, null=True, related_name="children", on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)
 
     def __unicode__(self):
@@ -28,7 +28,7 @@ class Environment(models.Model):
     name = models.CharField(max_length=30, null=False)
     host = models.CharField(max_length=20, null=False)
     status = models.SmallIntegerField(choices=((0, u'禁用'), (1, u'启用')), null=False, default=1)
-    project = models.ForeignKey(Project)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)
     type = models.SmallIntegerField(choices=((0, u'开发环境'), (1, u'测试环境'), (2, u'准生产环境'), (3, u'生产环境')), null=False)
 
@@ -40,8 +40,8 @@ class Api(models.Model):
     name = models.CharField(max_length=30, null=False)
     host = models.CharField(max_length=20, null=False)
     method = models.SmallIntegerField(choices=((0, 'GET'), (1, 'POST')), null=False)
-    project = models.ForeignKey(Project)
-    module = models.ForeignKey(Module)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    module = models.ForeignKey(Module, on_delete=models.CASCADE)
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)
 
     def __unicode__(self):
@@ -61,25 +61,25 @@ class Parameter(models.Model):
 
 
 class HeaderPara(models.Model):
-    api = models.ForeignKey(Api)
-    para = models.ForeignKey(Parameter)
+    api = models.ForeignKey(Api, on_delete=models.CASCADE)
+    para = models.ForeignKey(Parameter, on_delete=models.CASCADE)
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)
 
 
 class BodyPara(models.Model):
-    api = models.ForeignKey(Api)
-    para = models.ForeignKey(Parameter)
+    api = models.ForeignKey(Api, on_delete=models.CASCADE)
+    para = models.ForeignKey(Parameter, on_delete=models.CASCADE)
     content_type = models.SmallIntegerField(choices=((0, 'x-www-form-urlencoded'), (1, 'json'),), null=False)
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)
 
 
 class ResponsePara(models.Model):
-    api = models.ForeignKey(Api)
-    para = models.ForeignKey(Parameter)
+    api = models.ForeignKey(Api, on_delete=models.CASCADE)
+    para = models.ForeignKey(Parameter, on_delete=models.CASCADE)
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)
 
 
 class ComplexPara(models.Model):
-    parent_para = models.ForeignKey(Parameter, related_name='parent_para')
-    chirld_para = models.ForeignKey(Parameter, related_name='chirld_para')
+    parent_para = models.ForeignKey(Parameter, related_name='parent_para', on_delete=models.CASCADE)
+    chirld_para = models.ForeignKey(Parameter, related_name='chirld_para', on_delete=models.CASCADE)
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)

@@ -8,7 +8,7 @@ class Case(models.Model):
     name = models.CharField(max_length=30, null=False)
     status = models.SmallIntegerField(choices=((0, u'跳过'), (1, u'启用')), null=False, default=1)
     desc = models.CharField(max_length=30, null=False)
-    project = models.ForeignKey(Project)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return self.name
@@ -17,10 +17,10 @@ class Case(models.Model):
 class Step(models.Model):
     name = models.CharField(max_length=30, null=False)
     desc = models.CharField(max_length=30, null=False)
-    case = models.ForeignKey(Case)
-    api = models.ForeignKey(Api)
+    case = models.ForeignKey(Case, on_delete=models.CASCADE)
+    api = models.ForeignKey(Api, on_delete=models.CASCADE)
     order = models.IntegerField(null=False, default=1)
-    para = models.ForeignKey(Parameter)
+    para = models.ForeignKey(Parameter, on_delete=models.CASCADE)
     para_type = models.SmallIntegerField(
         choices=((10, 'herader para'), (21, 'body para urlencoded'), (22, 'body para json')), null=False)
     key = models.CharField(max_length=20, null=False)
@@ -31,7 +31,7 @@ class Step(models.Model):
 
 
 class CheckPoint(models.Model):
-    step = models.ForeignKey(Step)
+    step = models.ForeignKey(Step, on_delete=models.CASCADE)
     type = models.SmallIntegerField(choices=((0, 'herader value'), (2, 'body value'),), null=False)
     key = models.CharField(max_length=20, null=False)
     value = models.CharField(max_length=400, null=False)
@@ -40,7 +40,7 @@ class CheckPoint(models.Model):
 class Task(models.Model):
     name = models.CharField(max_length=30, null=False)
     desc = models.CharField(max_length=30, null=False)
-    environment = models.ForeignKey(Environment)
+    environment = models.ForeignKey(Environment, on_delete=models.CASCADE)
     case = models.ManyToManyField(Case)
 
     def __unicode__(self):

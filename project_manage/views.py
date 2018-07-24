@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from project_manage.models import *
 from rest_framework.decorators import api_view
 import json
+from django.db.models import Q
 
 
 # Create your views here.
@@ -24,7 +25,7 @@ def creat_project(request):
                 error_code = '20002'
                 message = u'项目名称重复。'
         except Exception as e:
-            print e.message
+            print(e.message)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -44,10 +45,9 @@ def edit_project(request):
             project = Project.objects.filter(id=proj_id)
             if project.exists():
                 if not Project.objects.exclude(id=proj_id).filter(name=name).exists():
-                    project.name = name
-                    project.save()
+                    project.update(name=name)
                     error_code = '0'
-                    message = u'新增组织机构成功。'
+                    message = u'项目编辑成功。'
                 else:
                     error_code = '20002'
                     message = u'项目名称重复。'
@@ -55,14 +55,14 @@ def edit_project(request):
                 error_code = '20001'
                 message = u'所选项目不存在。'
         except Exception as e:
-            print e.message
+            print(e.message)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
         error_code = '90001'
         message = u'存在必填项为空.'
 
-    resp = {'error_code': error_code, 'message': message,}
+    resp = {'error_code': error_code, 'message': message, }
     return JsonResponse(resp)
 
 
@@ -73,8 +73,8 @@ def file_project(request):
         try:
             project = Project.objects.filter(id=proj_id)
             if project.exists():
-                if project.first().status != '0':
-                    project.update(status='0')
+                if project.first().status != 0:
+                    project.update(status=0)
                     error_code = '0'
                     message = u'项目归档成功。'
                 else:
@@ -84,7 +84,7 @@ def file_project(request):
                 error_code = '20001'
                 message = u'所选项目不存在。'
         except Exception as e:
-            print e.message
+            print(e.message)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -97,16 +97,74 @@ def file_project(request):
 
 @api_view(['GET'])
 def project_list(request):
-    pass
+    name = request.GET.get('name', None)
+    status = request.GET.get('status', None)
+    error_code = ''
+    message = ''
+    data = []
+    try:
+        if name or status:
+            projects = Project.objects.filter(Q(name__contains=name) | Q(status=status)).order_by('id')
+        else:
+            projects = Project.objects.all().order_by('id')
+        for pro in projects:
+            project = {}
+            project['id'] = pro.id
+            project['name'] = pro.name
+            project['status'] = pro.get_status_display()
+            data.append(project)
+        error_code = '0'
+        message = u'获取项目列表成功。'
+    except Exception as e:
+        print(e.message)
+        error_code = '99999'
+        message = u'数据操作异常。'
+    resp = {'error_code': error_code, 'message': message, 'data': data}
+    return JsonResponse(resp)
 
 
 @api_view(['POST'])
 def add_member(request):
-    pass
+    members = request.POST.get('members', None)
+    proj_id = request.POST.get('projectid', None)
+    if proj_id:
+        try:
+            project = Project.objects.filter(id=proj_id, status=1)
+            if project.exists():
+                project = project.first()
+                if members.endswith(','):
+                    members = members[:-1].split(',')
+                else:
+                    members = members.split(',')
+
+                users = Users.objects.filter(id__in=members, is_del=1, status=1)
+                if users.exists():
+                    for user in users:
+                        project.team.add(user)
+                    error_code = '0'
+                    message = u'添加成员成功。'
+                else:
+                    error_code = '20004'
+                    message = u'所选员工不存在。'
+            else:
+                error_code = '20001'
+                message = u'所选项目不存在。'
+        except Exception as e:
+            print(e.message) 
+            error_code = '99999'
+            message = u'数据操作异常。'
+    else:
+        error_code = '90001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message, }
+    return JsonResponse(resp)
+
 
 
 @api_view(['POST'])
 def delete_member(request):
+    # project.team.remove(users)
     pass
 
 

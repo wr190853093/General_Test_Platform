@@ -31,7 +31,7 @@ def creat_org(request):
                     error_code = '10003'
                     message = u'不存在父节点组织机构。'
             except Exception as e:
-                print e.message
+                print(e.message)
                 error_code = '99999'
                 message = u'数据操作异常。'
         else:
@@ -46,7 +46,7 @@ def creat_org(request):
                     error_code = '10002'
                     message = u'同节点组织机构名称重复。'
             except Exception as e:
-                print e.message
+                print(e.message)
                 error_code = '99999'
                 message = u'数据操作异常。'
     else:
@@ -59,9 +59,9 @@ def creat_org(request):
     # return HttpResponse(js)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def delete_org(request):
-    org_id = request.REQUEST.get('orgid', None)
+    org_id = request.GET.get('orgid', None)
     # error_code = ''
     # message = ''
     if org_id:
@@ -79,7 +79,7 @@ def delete_org(request):
                 error_code = '10004'
                 message = u'所选组织机构不存在。'
         except Exception as e:
-            print e.message
+            print(e.message)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -112,7 +112,7 @@ def edit_org(request):
                 error_code = '10004'
                 message = u'所选组织机构不存在。'
         except Exception as e:
-            print e.message
+            print(e.message)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -140,7 +140,7 @@ def get_child(parent, result={}, data={}, node=[]):
     return result
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def org_tree(request):
     error_code = ''
     message = ''
@@ -153,14 +153,14 @@ def org_tree(request):
         error_code = '0'
         message = u'获取组织机构树成功。'
     except Exception as e:
-        print e.message
+        print(e.message)
         error_code = '99999'
         message = u'数据操作异常。'
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 # 暂时不要该接口
 def org_info(request):
     # return HttpResponse('1')
@@ -199,7 +199,7 @@ def creat_user(request):
                         error_code = '10004'
                         message = u'所选组织机构不存在。'
                 except Exception as e:
-                    print e.message
+                    print(e.message)
                     error_code = '99999'
                     message = u'数据操作异常。'
             else:
@@ -216,9 +216,9 @@ def creat_user(request):
     return JsonResponse(resp)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def delete_user(request):
-    user_id = request.REQUEST.get('userid', None)
+    user_id = request.GET.get('userid', None)
     if user_id:
         try:
             user = Users.objects.filter(id=user_id)
@@ -230,7 +230,7 @@ def delete_user(request):
                 error_code = '10007'
                 message = u'所选员工不存在。'
         except Exception as e:
-            print e.message
+            print(e.message)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -275,7 +275,7 @@ def edit_user(request):
                         error_code = '10004'
                         message = u'所选组织机构不存在。'
                 except Exception as e:
-                    print e.message
+                    print(e.message)
                     error_code = '99999'
                     message = u'数据操作异常。'
             else:
@@ -311,7 +311,7 @@ def enable_user(request):
                 error_code = '10007'
                 message = u'所选员工不存在。'
         except Exception as e:
-            print e.message
+            print(e.message)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -341,7 +341,7 @@ def unenable_user(request):
                 error_code = '10007'
                 message = u'所选员工不存在。'
         except Exception as e:
-            print e.message
+            print(e.message)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -352,9 +352,11 @@ def unenable_user(request):
     return JsonResponse(resp)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def user_list(request):
-    org = request.REQUEST.get('orgid', None)
+    name = request.GET.get('name', '')
+    username = request.GET.get('username', '')
+    org = request.GET.get('orgid', None)
     error_code = ''
     message = ''
     data = []
@@ -367,7 +369,7 @@ def user_list(request):
                 error_code = '10004'
                 message = u'所选组织机构不存在。'
         else:
-            users = Users.objects.filter(is_del=1).order_by('id')
+            users = Users.objects.filter(name__contains=name, username__contains=username, is_del=1).order_by('id')
         for u in users:
             user = {}
             user['id'] = u.id
@@ -381,18 +383,18 @@ def user_list(request):
         error_code = '0'
         message = u'获取员工列表成功。'
     except Exception as e:
-        print e.message
+        print(e.message)
         error_code = '99999'
         message = u'数据操作异常。'
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def user_info(request):
     error_code = ''
     message = ''
-    user_id = request.REQUEST.get('userid', None)
+    user_id = request.GET.get('userid', None)
     data = []
     if user_id:
         try:
@@ -413,7 +415,7 @@ def user_info(request):
                 error_code = '10007'
                 message = u'所选员工不存在。'
         except Exception as e:
-            print e.message
+            print(e.message)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -425,7 +427,7 @@ def user_info(request):
 
 @api_view(['POST'])
 def edit_password(request):
-    user_id = request.REQUEST.get('userid', None)
+    user_id = request.POST.get('userid', None)
     pwd = request.POST.get('password', None)
     if user_id and pwd:
         try:
@@ -438,7 +440,7 @@ def edit_password(request):
                 error_code = '10007'
                 message = u'所选员工不存在。'
         except Exception as e:
-            print e.message
+            print(e.message)
             error_code = '99999'
             message = u'数据操作异常。'
     else:

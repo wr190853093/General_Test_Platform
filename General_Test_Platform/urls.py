@@ -18,7 +18,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^api_author/', include('author_manage.urls')),
     url(r'^api_project/', include('project_manage.urls')),
     url(r'^api_ceshi/', include('ceshi_manage.urls')),
