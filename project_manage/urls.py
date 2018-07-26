@@ -1,6 +1,6 @@
 # coding:utf-8
 
-from django.conf.urls import  url
+from django.conf.urls import url
 from project_manage.views import *
 
 urlpatterns = [
@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^fileproject/', file_project),  # 归档项目
     url(r'^getprojectlist/', project_list),  # 获取项目列表
     url(r'^addmember/', add_member),  # 增加成员   #  批量增加
+    url(r'^getmemberlist/', member_list),  # 获取成员列表
     url(r'^deletemember/', delete_member),  # 删除成员 # 批量删除
     # 模块管理
     url(r'^creatmodule/', creat_module),  # 添加模块

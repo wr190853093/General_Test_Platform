@@ -10,7 +10,7 @@ class Project(models.Model):
     status = models.SmallIntegerField(choices=((0, u'归档'), (1, u'正常')), null=False, default=1)
     team = models.ManyToManyField(Users)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -20,7 +20,7 @@ class Module(MPTTModel):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -32,7 +32,7 @@ class Environment(models.Model):
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)
     type = models.SmallIntegerField(choices=((0, u'开发环境'), (1, u'测试环境'), (2, u'准生产环境'), (3, u'生产环境')), null=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -44,7 +44,7 @@ class Api(models.Model):
     module = models.ForeignKey(Module, on_delete=models.CASCADE)
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -56,7 +56,7 @@ class Parameter(models.Model):
     data_type = models.SmallIntegerField(
         choices=((0, 'string'), (1, 'number'), (2, 'object'), (3, 'boolean'), (4, 'array'),), null=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.key
 
 

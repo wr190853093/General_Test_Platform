@@ -31,7 +31,7 @@ def creat_org(request):
                     error_code = '10003'
                     message = u'不存在父节点组织机构。'
             except Exception as e:
-                print(e.message)
+                print(e)
                 error_code = '99999'
                 message = u'数据操作异常。'
         else:
@@ -46,7 +46,7 @@ def creat_org(request):
                     error_code = '10002'
                     message = u'同节点组织机构名称重复。'
             except Exception as e:
-                print(e.message)
+                print(e)
                 error_code = '99999'
                 message = u'数据操作异常。'
     else:
@@ -79,7 +79,7 @@ def delete_org(request):
                 error_code = '10004'
                 message = u'所选组织机构不存在。'
         except Exception as e:
-            print(e.message)
+            print(e)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -112,7 +112,7 @@ def edit_org(request):
                 error_code = '10004'
                 message = u'所选组织机构不存在。'
         except Exception as e:
-            print(e.message)
+            print(e)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -153,7 +153,7 @@ def org_tree(request):
         error_code = '0'
         message = u'获取组织机构树成功。'
     except Exception as e:
-        print(e.message)
+        print(e)
         error_code = '99999'
         message = u'数据操作异常。'
     resp = {'error_code': error_code, 'message': message, 'data': data}
@@ -199,7 +199,7 @@ def creat_user(request):
                         error_code = '10004'
                         message = u'所选组织机构不存在。'
                 except Exception as e:
-                    print(e.message)
+                    print(e)
                     error_code = '99999'
                     message = u'数据操作异常。'
             else:
@@ -230,7 +230,7 @@ def delete_user(request):
                 error_code = '10007'
                 message = u'所选员工不存在。'
         except Exception as e:
-            print(e.message)
+            print(e)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -275,7 +275,7 @@ def edit_user(request):
                         error_code = '10004'
                         message = u'所选组织机构不存在。'
                 except Exception as e:
-                    print(e.message)
+                    print(e)
                     error_code = '99999'
                     message = u'数据操作异常。'
             else:
@@ -311,7 +311,7 @@ def enable_user(request):
                 error_code = '10007'
                 message = u'所选员工不存在。'
         except Exception as e:
-            print(e.message)
+            print(e)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -341,7 +341,7 @@ def unenable_user(request):
                 error_code = '10007'
                 message = u'所选员工不存在。'
         except Exception as e:
-            print(e.message)
+            print(e)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -383,7 +383,7 @@ def user_list(request):
         error_code = '0'
         message = u'获取员工列表成功。'
     except Exception as e:
-        print(e.message)
+        print(e)
         error_code = '99999'
         message = u'数据操作异常。'
     resp = {'error_code': error_code, 'message': message, 'data': data}
@@ -415,7 +415,7 @@ def user_info(request):
                 error_code = '10007'
                 message = u'所选员工不存在。'
         except Exception as e:
-            print(e.message)
+            print(e)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -440,7 +440,7 @@ def edit_password(request):
                 error_code = '10007'
                 message = u'所选员工不存在。'
         except Exception as e:
-            print(e.message)
+            print(e)
             error_code = '99999'
             message = u'数据操作异常。'
     else:

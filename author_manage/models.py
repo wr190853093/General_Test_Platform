@@ -9,7 +9,7 @@ class Organization(MPTTModel):
     parent = TreeForeignKey("self", blank=True, null=True, related_name="children", on_delete=models.CASCADE)
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -23,5 +23,5 @@ class Users(models.Model):
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)
     password = models.CharField(max_length=128, null=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

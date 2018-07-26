@@ -10,7 +10,7 @@ class Case(models.Model):
     desc = models.CharField(max_length=30, null=False)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -26,7 +26,7 @@ class Step(models.Model):
     key = models.CharField(max_length=20, null=False)
     value = models.CharField(max_length=400, null=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -43,7 +43,7 @@ class Task(models.Model):
     environment = models.ForeignKey(Environment, on_delete=models.CASCADE)
     case = models.ManyToManyField(Case)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -51,5 +51,5 @@ class Report(models.Model):
     task = models.ManyToManyField(Task)
     file_name = models.CharField(max_length=30, null=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.file_name
