@@ -4,7 +4,9 @@ from django.http import HttpResponse, JsonResponse
 from project_manage.models import *
 from rest_framework.decorators import api_view
 import json
-from django.db.models import Q
+
+# from django.db.models import Q
+# projects = Project.objects.filter(Q(name__contains=name) | Q(status=status)).order_by('id')  # or查询
 
 
 # Create your views here.
@@ -25,7 +27,7 @@ def creat_project(request):
                 error_code = '20002'
                 message = u'项目名称重复。'
         except Exception as e:
-            print(e.message)
+            print(e)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -55,7 +57,7 @@ def edit_project(request):
                 error_code = '20001'
                 message = u'所选项目不存在。'
         except Exception as e:
-            print(e.message)
+            print(e)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -84,7 +86,7 @@ def file_project(request):
                 error_code = '20001'
                 message = u'所选项目不存在。'
         except Exception as e:
-            print(e.message)
+            print(e)
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -103,8 +105,12 @@ def project_list(request):
     message = ''
     data = []
     try:
-        if name or status:
-            projects = Project.objects.filter(Q(name__contains=name) | Q(status=status)).order_by('id')
+        if name and status:
+            projects = Project.objects.filter(name__contains=name, status=status).order_by('id')
+        elif name and not status:
+            projects = Project.objects.filter(name__contains=name).order_by('id')
+        elif not name and  status:
+            projects = Project.objects.filter(status=status).order_by('id')
         else:
             projects = Project.objects.all().order_by('id')
         for pro in projects:
@@ -116,7 +122,7 @@ def project_list(request):
         error_code = '0'
         message = u'获取项目列表成功。'
     except Exception as e:
-        print(e.message)
+        print(e)
         error_code = '99999'
         message = u'数据操作异常。'
     resp = {'error_code': error_code, 'message': message, 'data': data}
@@ -150,7 +156,7 @@ def add_member(request):
                 error_code = '20001'
                 message = u'所选项目不存在。'
         except Exception as e:
-            print(e.message) 
+            print(e) 
             error_code = '99999'
             message = u'数据操作异常。'
     else:
@@ -160,6 +166,44 @@ def add_member(request):
     resp = {'error_code': error_code, 'message': message, }
     return JsonResponse(resp)
 
+
+@api_view(['GET'])
+def member_list(request):
+    proj_id = request.GET.get('projectid', None)
+    data = []
+    if proj_id:
+        try:
+            project = Project.objects.filter(id=proj_id, status=1)
+            if project.exists():
+                project = project.first()
+                users = project.team
+                if users.exists():
+
+                    for user in users.all():
+                        member = {}
+                        name = user.name
+                        role = user.get_role_display()
+                        member['name'] = name
+                        member['role'] = role
+                        data.append(member)
+                    error_code = '0'
+                    message = u'获取成员成功。'
+                else:
+                    error_code = '20005'
+                    message = u'所选项目没有成员。'
+            else:
+                error_code = '20001'
+                message = u'所选项目不存在。'
+        except Exception as e:
+            print(e)
+            error_code = '99999'
+            message = u'数据操作异常。'
+    else:
+        error_code = '90001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message, 'data': data}
+    return JsonResponse(resp)
 
 
 @api_view(['POST'])
