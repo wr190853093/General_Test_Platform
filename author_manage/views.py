@@ -18,7 +18,7 @@ def creat_org(request):
             try:
                 parent = Organization.objects.filter(id=parent_id, is_del=1)
                 if parent.exists():
-                    if not Organization.objects.filter(parent=parent, name=name, is_del=1).exists():
+                    if not Organization.objects.filter(parent=parent.first(), name=name, is_del=1).exists():
                         org = Organization(name=name, is_del=is_del, parent=parent.first())
                         org.save()
                         error_code = '0'
@@ -59,9 +59,9 @@ def creat_org(request):
     # return HttpResponse(js)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def delete_org(request):
-    org_id = request.GET.get('orgid', None)
+    org_id = request.POST.get('orgid', None)
     # error_code = ''
     # message = ''
     if org_id:
@@ -123,27 +123,10 @@ def edit_org(request):
     return JsonResponse(resp)
 
 
-def get_child(parent, result={}, data={}, node=[]):
-    child = parent.get_children().filter(is_del=1, tree_id=parent.tree_id)
-    for c in child:
-        ch = {}
-        ch['child_name'] = c.name
-        ch['id'] = c.id
-        ch['parent_id'] = c.parent_id
-        node.append(ch)
-        if c.get_children().filter(is_del=1).exists():
-            get_child(c, node=node)
-    data['toporg_id'] = parent.id
-    data['toporg_name'] = parent.name
-    result['toporg'] = data
-    result['node'] = node
-    return result
-
-
 @api_view(['GET'])
 def org_tree(request):
-    error_code = ''
-    message = ''
+    # error_code = ''
+    # message = ''
     data = []
     try:
         root = Organization.objects.filter(parent__isnull=True, is_del=1)
@@ -216,9 +199,9 @@ def creat_user(request):
     return JsonResponse(resp)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def delete_user(request):
-    user_id = request.GET.get('userid', None)
+    user_id = request.POST.get('userid', None)
     if user_id:
         try:
             user = Users.objects.filter(id=user_id)

@@ -14,14 +14,14 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf.urls import include, url
 from django.contrib import admin
+from django.urls import include,path
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^api_author/', include('author_manage.urls')),
-    url(r'^api_project/', include('project_manage.urls')),
-    url(r'^api_ceshi/', include('ceshi_manage.urls')),
-    url(r'^api_mock/', include('mock_manage.urls')),
+    path(r'admin/', admin.site.urls),
+    path(r'api_author/', include('author_manage.urls')),
+    path(r'api_project/', include('project_manage.urls')),
+    path(r'api_ceshi/', include('ceshi_manage.urls')),
+    path(r'api_mock/', include('mock_manage.urls')),
 
 ]
