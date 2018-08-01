@@ -25,8 +25,8 @@ class Module(MPTTModel):
 
 
 class Environment(models.Model):
-    name = models.CharField(max_length=30, null=False)
-    host = models.CharField(max_length=20, null=False)
+    name = models.CharField(max_length=30, null=False, default='NULL')
+    host = models.CharField(max_length=20, null=False, default='NULL')
     status = models.SmallIntegerField(choices=((0, u'禁用'), (1, u'启用')), null=False, default=1)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)
