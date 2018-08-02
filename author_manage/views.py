@@ -1,14 +1,37 @@
 # coding:utf-8
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+"""
+    error_code = '0'      message = u'新增组织机构成功。'
+    error_code = '10001'  message = u'请先删除子节点组织机构再删除父节点组织机构。'
+    error_code = '10002'  message = u'同节点组织机构名称重复。'
+    error_code = '10003'  message = u'不存在父节点组织机构。'
+    error_code = '10004'  message = u'所选组织机构不存在。
+    error_code = '10005'  message = u'员工角色错误。'
+    error_code = '10006'  message = u'用户名已经存在。'
+    error_code = '10007'  message = u'所选员工不存在。'
+    error_code = '10008'  message = u'所选员工已为在职状态。'
+    error_code = '10009'  message = u'所选员工已为离职状态。'
+    error_code = '99999   message = u'数据操作异常。'
+    error_code = '90001'  message = u'存在必填项为空.'
+"""
+from django.http import JsonResponse
 from author_manage.models import *
 from rest_framework.decorators import api_view
-import json
+from common.util import *
 
 
 # 新增组织机构
 @api_view(['POST'])
 def creat_org(request):
+    """
+    POST请求，创建组织机构
+    :param request: name,parentid
+    :return: resp = {'error_code': error_code, 'message': message, 'org_id': data}
+             error_code = '0'
+             error_code = '10002'
+             error_code = '10003'
+             error_code = '90001'
+    """
+
     name = request.POST.get('name', None)
     parent_id = request.POST.get('parentid', None)
     is_del = '1'
@@ -61,6 +84,16 @@ def creat_org(request):
 
 @api_view(['POST'])
 def delete_org(request):
+    """
+    POST请求，删除组织机构
+    :param request: orgid
+    :return: resp = {'error_code': error_code, 'message': message}
+             error_code = '0'
+             error_code = '10001'
+             error_code = '10004'
+             error_code = '90001'
+    """
+
     org_id = request.POST.get('orgid', None)
     # error_code = ''
     # message = ''
@@ -73,7 +106,7 @@ def delete_org(request):
                     error_code = '0'
                     message = u'删除组织机构成功。'
                 else:
-                    error_code = '90001'
+                    error_code = '10001'
                     message = u'请先删除子节点组织机构再删除父节点组织机构。'
             else:
                 error_code = '10004'
@@ -92,6 +125,17 @@ def delete_org(request):
 
 @api_view(['POST'])
 def edit_org(request):
+    """
+    POST请求，编辑组织机构
+    :param request: orgid，name
+    :return: resp = {'error_code': error_code, 'message': message}
+             error_code = '0'
+             error_code = '10002'
+             error_code = '10004'
+             error_code = '99999'
+             error_code = '90001'
+    """
+
     org_id = request.POST.get('orgid', None)
     name = request.POST.get('name', None)
     # is_del = '1'
@@ -125,8 +169,14 @@ def edit_org(request):
 
 @api_view(['GET'])
 def org_tree(request):
-    # error_code = ''
-    # message = ''
+    """
+    GET请求，获取组织机构
+    :param request:
+    :return: resp = {'error_code': error_code, 'message': message}
+             error_code = '0'
+             error_code = '99999'
+    """
+
     data = []
     try:
         root = Organization.objects.filter(parent__isnull=True, is_del=1)
@@ -152,6 +202,18 @@ def org_info(request):
 
 @api_view(['POST'])
 def creat_user(request):
+    """
+    POST请求，新增员工
+    :param request: name，username，email，org，role，password
+    :return: resp = {'error_code': error_code, 'message': message}
+             error_code = '0'
+             error_code = '10004'
+             error_code = '10005'
+             error_code = '10006'
+             error_code = '99999'
+             error_code = '90001'
+    """
+
     name = request.POST.get('name', None)
     username = request.POST.get('username', None)
     email = request.POST.get('email', None)  # 前台进行邮箱格式校验，后台不做校验了
@@ -188,7 +250,8 @@ def creat_user(request):
             else:
                 error_code = '10005'
                 message = u'员工角色错误。'
-        except:
+        except Exception as e:
+            print(e)
             error_code = '10005'
             message = u'员工角色错误。'
     else:
@@ -201,6 +264,16 @@ def creat_user(request):
 
 @api_view(['POST'])
 def delete_user(request):
+    """
+        POST请求，删除员工
+        :param request: userid，
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '10007'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     user_id = request.POST.get('userid', None)
     if user_id:
         try:
@@ -227,6 +300,19 @@ def delete_user(request):
 @api_view(['POST'])
 # 编辑name、username、email、role、org
 def edit_user(request):
+    """
+        POST请求，编辑员工
+        :param request: userid，name，username，email，org，role，password
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '10004'
+                 error_code = '10006'
+                 error_code = '10004'
+                 error_code = '10007'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     user_id = request.POST.get('userid', None)
     name = request.POST.get('name', None)
     username = request.POST.get('username', None)
@@ -264,7 +350,8 @@ def edit_user(request):
             else:
                 error_code = '10005'
                 message = u'员工角色错误。'
-        except:
+        except Exception as e:
+            print(e)
             error_code = '10005'
             message = u'员工角色错误。'
     else:
@@ -278,6 +365,17 @@ def edit_user(request):
 @api_view(['POST'])
 # 根据userid修改状态
 def enable_user(request):
+    """
+        POST请求，启用员工
+        :param request: userid
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '10007'
+                 error_code = '10008'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     user_id = request.POST.get('userid', None)
     if user_id:
         try:
@@ -308,6 +406,17 @@ def enable_user(request):
 @api_view(['POST'])
 # 根据userid修改状态
 def unenable_user(request):
+    """
+        POST请求，禁用员工
+        :param request: userid
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '10007'
+                 error_code = '10009'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     user_id = request.POST.get('userid', None)
     if user_id:
         try:
@@ -337,24 +446,35 @@ def unenable_user(request):
 
 @api_view(['GET'])
 def user_list(request):
+    """
+        GET请求，获取员工列表
+        :param request: name，username，orgid
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '10004'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     name = request.GET.get('name', '')
     username = request.GET.get('username', '')
     org = request.GET.get('orgid', None)
-    error_code = ''
-    message = ''
     data = []
     try:
         if org:
+
             organize = Organization.objects.filter(id=org, is_del=1)
             if organize.exists():
                 users = Users.objects.filter(org=organize.first(), is_del=1)
             else:
                 error_code = '10004'
                 message = u'所选组织机构不存在。'
+                resp = {'error_code': error_code, 'message': message, 'data': data}
+                return JsonResponse(resp)
         else:
             users = Users.objects.filter(name__contains=name, username__contains=username, is_del=1).order_by('id')
         for u in users:
-            user = {}
+            user = dict()
             user['id'] = u.id
             user['name'] = u.name
             user['username'] = u.username
@@ -375,8 +495,16 @@ def user_list(request):
 
 @api_view(['GET'])
 def user_info(request):
-    error_code = ''
-    message = ''
+    """
+        GET请求，获取员工信息
+        :param request: userid，
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '10007'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     user_id = request.GET.get('userid', None)
     data = []
     if user_id:
@@ -384,7 +512,7 @@ def user_info(request):
             users = Users.objects.filter(is_del=1, id=user_id)
             if users.exists():
                 u = users.first()
-                user = {}
+                user = dict()
                 user['id'] = u.id
                 user['name'] = u.name
                 user['username'] = u.username
@@ -410,6 +538,16 @@ def user_info(request):
 
 @api_view(['POST'])
 def edit_password(request):
+    """
+        POST请求，获取员工信息
+        :param request: userid，password
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '10007'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     user_id = request.POST.get('userid', None)
     pwd = request.POST.get('password', None)
     if user_id and pwd:
