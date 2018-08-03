@@ -1,19 +1,38 @@
 # coding:utf-8
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+"""
+error_code = '20001'  message = u'所选项目不存在。'
+error_code = '20002'  message = u'项目名称重复。'
+error_code = '20003'  message = u'项目已为归档状态。'
+error_code = '20004'  message = u'所选员工不存在。'
+error_code = '20005'  message = u'所选项目没有成员。'
+error_code = '20006'  message = u'所选员工不存在或不在此项目中。'
+error_code = '20007'  message = u'请先删除子节点模块再删除父节点模块。'
+error_code = '20008'  message = u'所选模块不存在。'
+error_code = '20009'  message = u'同节点模块名称重复。'
+error_code = '20010'  message = u'不存在父节点模块。'
+error_code = '20011'  message = u'所选环境已为启用状态。'
+error_code = '20012'  message = u'所选环境不存在。'
+error_code = '20013'  message = u'所选环境已为禁用状态。'
+
+"""
+from django.http import JsonResponse
 from project_manage.models import *
 from rest_framework.decorators import api_view
-from common.util import *
-import json
-
-
 # from django.db.models import Q
+from common.util import *
 
-
-# Create your views here.
 
 @api_view(['POST'])
-def creat_project(request):
+def create_project(request):
+    """
+        POST请求，新增项目
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
     name = request.POST.get('name', None)
     data = ''
     if name:
@@ -41,6 +60,16 @@ def creat_project(request):
 
 @api_view(['POST'])
 def edit_project(request):
+    """
+        POST请求，编辑项目
+        :param request: projectid，name，
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '20001'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
     proj_id = request.POST.get('projectid', None)
     name = request.POST.get('name', None)
     if name and proj_id:
@@ -71,6 +100,16 @@ def edit_project(request):
 
 @api_view(['POST'])
 def file_project(request):
+    """
+        POST请求，归档项目
+        :param request: projectid，
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '20001'
+                 error_code = '20003'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
     proj_id = request.POST.get('projectid', None)
     if proj_id:
         try:
@@ -100,6 +139,14 @@ def file_project(request):
 
 @api_view(['GET'])
 def project_list(request):
+    """
+        GET请求，获取项目列表
+        :param request: name，status
+        :return: resp = {'error_code': error_code, 'message': message, 'data': data}
+                 error_code = '0'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
     name = request.GET.get('name', None)
     status = request.GET.get('status', None)
     # error_code = ''
@@ -110,7 +157,7 @@ def project_list(request):
         kwargs = getkwargs(searchcondition)
         projects = Project.objects.filter(**kwargs).order_by('id')
         for pro in projects:
-            project = {}
+            project = dict()
             project['id'] = pro.id
             project['name'] = pro.name
             project['status'] = pro.get_status_display()
@@ -127,6 +174,16 @@ def project_list(request):
 
 @api_view(['POST'])
 def add_member(request):
+    """
+        POST请求，新增成员
+        :param request: members，projectid
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '20001'
+                 error_code = '20004'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
     members = request.POST.get('members', None)
     proj_id = request.POST.get('projectid', None)
     if proj_id:
@@ -165,6 +222,16 @@ def add_member(request):
 
 @api_view(['GET'])
 def member_list(request):
+    """
+        GET请求，获取成员列表
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'data': data}
+                 error_code = '0'
+                 error_code = '20001'
+                 error_code = '20005'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
     proj_id = request.GET.get('projectid', None)
     data = []
     if proj_id:
@@ -206,6 +273,15 @@ def member_list(request):
 
 @api_view(['POST'])
 def delete_member(request):
+    """
+        GET请求，删除成员
+        :param request: membersid，projectid
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '20006'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
     members_id = request.POST.get('membersid', None)
     proj_id = request.POST.get('projectid', None)
 
@@ -229,7 +305,7 @@ def delete_member(request):
                         error_code = '0'
                         message = u'删除员工成功。'
                 else:
-                    error_code = '20008'
+                    error_code = '20006'
                     message = u'所选员工不存在或不在此项目中。'
             else:
                 error_code = '20001'
@@ -247,7 +323,18 @@ def delete_member(request):
 
 
 @api_view(['POST'])
-def creat_module(request):
+def create_module(request):
+    """
+        POST请求，新增模块
+        :param request: name，parentid，projectid
+        :return: resp = {'error_code': error_code, 'message': message, 'module_id': data}
+                 error_code = '0'
+                 error_code = '20009'
+                 error_code = '20010'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     name = request.POST.get('name', None)
     parent_id = request.POST.get('parentid', None)
     proj_id = request.POST.get('projectid', None)
@@ -310,6 +397,17 @@ def creat_module(request):
 
 @api_view(['POST'])
 def edit_module(request):
+    """
+        POST请求，编辑模块
+        :param request: moduleid，name，
+        :return: resp = {'error_code': error_code, 'message': message,}
+                 error_code = '0'
+                 error_code = '20009'
+                 error_code = '20008'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     module_id = request.POST.get('moduleid', None)
     name = request.POST.get('name', None)
     # is_del = '1'
@@ -327,7 +425,7 @@ def edit_module(request):
                     error_code = '20009'
                     message = u'同节点模块名称重复。'
             else:
-                error_code = '20011'
+                error_code = '20008'
                 message = u'所选模块不存在。'
         except Exception as e:
             print(e)
@@ -343,6 +441,17 @@ def edit_module(request):
 
 @api_view(['POST'])
 def delete_module(request):
+    """
+        POST请求，删除模块
+        :param request: moduleid，
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '20007'
+                 error_code = '20008'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     module_id = request.POST.get('moduleid', None)
     # error_code = ''
     # message = ''
@@ -355,10 +464,10 @@ def delete_module(request):
                     error_code = '0'
                     message = u'删除模块成功。'
                 else:
-                    error_code = '90001'
+                    error_code = '20007'
                     message = u'请先删除子节点模块再删除父节点模块。'
             else:
-                error_code = '20011'
+                error_code = '20008'
                 message = u'所选模块不存在。'
         except Exception as e:
             print(e)
@@ -374,6 +483,15 @@ def delete_module(request):
 
 @api_view(['GET'])
 def module_tree(request):
+    """
+        GET请求，获取模块树
+        :param request:
+        :return: resp = {'error_code': error_code, 'message': message, 'data': data}
+                 error_code = '0'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     data = []
     try:
         root = Module.objects.filter(parent__isnull=True, is_del=1)
@@ -392,7 +510,17 @@ def module_tree(request):
 
 
 @api_view(['POST'])
-def creat_environment(request):
+def create_environment(request):
+    """
+        POST请求，新增环境
+        :param request: name，host，projectid，type
+        :return: resp = {'error_code': error_code, 'message': message, 'data': data}
+                 error_code = '0'
+                 error_code = '20001'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     name = request.POST.get('name', None)
     host = request.POST.get('host', None)
     proj_id = request.POST.get('projectid', None)
@@ -429,6 +557,17 @@ def creat_environment(request):
 
 @api_view(['POST'])
 def edit_environment(request):
+    """
+        POST请求，编辑环境
+        :param request: environmentid，name，host，projectid，type
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '20001'
+                 error_code = '20012'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     envi_id = request.POST.get('environmentid', None)
     name = request.POST.get('name', None)
     host = request.POST.get('host', None)
@@ -467,6 +606,16 @@ def edit_environment(request):
 
 @api_view(['POST'])
 def delete_environment(request):
+    """
+        POST请求，删除环境
+        :param request: environmentid，
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '20012'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     envi_id = request.POST.get('environmentid', None)
     if envi_id:
         try:
@@ -492,6 +641,17 @@ def delete_environment(request):
 
 @api_view(['POST'])
 def enable_evnironment(request):
+    """
+        POST请求，启用环境
+        :param request: environmentid，
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '20012'
+                 error_code = '20013'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     envi_id = request.POST.get('environmentid', None)
     if envi_id:
         try:
@@ -521,6 +681,17 @@ def enable_evnironment(request):
 
 @api_view(['POST'])
 def unenable_environment(request):
+    """
+        POST请求，禁用环境
+        :param request: environmentid，
+        :return: resp = {'error_code': error_code, 'message': message}
+                 error_code = '0'
+                 error_code = '20012'
+                 error_code = '20011'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     envi_id = request.POST.get('environmentid', None)
     if envi_id:
         try:
@@ -531,7 +702,7 @@ def unenable_environment(request):
                     error_code = '0'
                     message = u'修改环境状态成功。'
                 else:
-                    error_code = '20014'
+                    error_code = '20011'
                     message = u'所选环境已为启用状态。'
             else:
                 error_code = '20012'
@@ -550,6 +721,16 @@ def unenable_environment(request):
 
 @api_view(['GET'])
 def environment_list(request):
+    """
+        GET请求，获取环境列表
+        :param request: name，host，projectid，type，status
+        :return: resp = {'error_code': error_code, 'message': message, 'data': data}
+                 error_code = '0'
+                 error_code = '20001'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     name = request.GET.get('name', None)
     host = request.GET.get('host', None)
     proj_id = request.GET.get('projectid', None)
@@ -569,7 +750,7 @@ def environment_list(request):
                 kwargs = getkwargs(searchcondition)
                 evironments = Environment.objects.filter(**kwargs).order_by('id')
                 for env in evironments:
-                    evironments = {}
+                    evironments = dict()
                     evironments['id'] = env.id
                     evironments['name'] = env.name
                     evironments['host'] = env.host
@@ -597,66 +778,196 @@ def environment_list(request):
     return JsonResponse(resp)
 
 
-@api_view(['GET'])
-def creat_api(request):
+@api_view(['POST'])
+def create_api(request):
+    """
+        POST请求，新增项目
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     pass
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def edit_api(request):
+    """
+        POST请求，新增项目
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     pass
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def delete_api(request):
+    """
+        POST请求，新增项目
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     pass
 
 
 @api_view(['GET'])
 def api_list(request):
+    """
+        GET请求，新增项目
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     pass
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def add_headerpara(request):
+    """
+        POST请求，新增项目
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     pass
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def delete_headerpara(request):
+    """
+        POST请求，新增项目
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     pass
 
 
 @api_view(['GET'])
 def headerpara_list(request):
+    """
+        GET请求，新增项目
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     pass
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def add_bodypara(request):
+    """
+        POST请求，新增项目
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     pass
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def delete_bodypara(request):
+    """
+        POST请求，新增项目
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     pass
 
 
 @api_view(['GET'])
 def bodypara_list(request):
+    """
+        GET请求，新增项目
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     pass
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def add_responsepara(request):
+    """
+        POST请求，新增项目
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     pass
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def delete_responsepara(request):
+    """
+        POST请求，新增项目
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     pass
 
 
 @api_view(['GET'])
 def responsepara_list(request):
+    """
+        GET请求，新增项目
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
     pass

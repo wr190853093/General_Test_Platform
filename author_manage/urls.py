@@ -5,11 +5,11 @@ from author_manage.views import *
 
 
 urlpatterns = [
-    url(r'^creatorg/', creat_org),  # 新增组织
+    url(r'^createorg/', create_org),  # 新增组织
     url(r'^deleteorg/', delete_org),  # 删除组织
     url(r'^getorgtree/', org_tree),  # 获取组织机构树
     # url(r'^getorginfo/', org_info),  # 获取组织机构信息
-    url(r'^creatuser/', creat_user),  # 新增员工
+    url(r'^createuser/', create_user),  # 新增员工
     url(r'^deleteuser/', delete_user),  # 删除员工
     url(r'^edituser/', edit_user),  # 编辑员工
     url(r'^enableuser/', enable_user),  # 启用员工

@@ -1,6 +1,5 @@
 # coding:utf-8
 """
-    error_code = '0'      message = u'新增组织机构成功。'
     error_code = '10001'  message = u'请先删除子节点组织机构再删除父节点组织机构。'
     error_code = '10002'  message = u'同节点组织机构名称重复。'
     error_code = '10003'  message = u'不存在父节点组织机构。'
@@ -21,7 +20,7 @@ from common.util import *
 
 # 新增组织机构
 @api_view(['POST'])
-def creat_org(request):
+def create_org(request):
     """
     POST请求，创建组织机构
     :param request: name,parentid
@@ -172,7 +171,7 @@ def org_tree(request):
     """
     GET请求，获取组织机构
     :param request:
-    :return: resp = {'error_code': error_code, 'message': message}
+    :return: resp = {'error_code': error_code, 'message': message, 'data': data}
              error_code = '0'
              error_code = '99999'
     """
@@ -201,11 +200,11 @@ def org_info(request):
 
 
 @api_view(['POST'])
-def creat_user(request):
+def create_user(request):
     """
     POST请求，新增员工
     :param request: name，username，email，org，role，password
-    :return: resp = {'error_code': error_code, 'message': message}
+    :return: resp = {'error_code': error_code, 'message': message, 'user_id': data}
              error_code = '0'
              error_code = '10004'
              error_code = '10005'
@@ -449,7 +448,7 @@ def user_list(request):
     """
         GET请求，获取员工列表
         :param request: name，username，orgid
-        :return: resp = {'error_code': error_code, 'message': message}
+        :return: resp = {'error_code': error_code, 'message': message, 'data': data}
                  error_code = '0'
                  error_code = '10004'
                  error_code = '99999'
@@ -498,7 +497,7 @@ def user_info(request):
     """
         GET请求，获取员工信息
         :param request: userid，
-        :return: resp = {'error_code': error_code, 'message': message}
+        :return: resp = {'error_code': error_code, 'message': message, 'data': data}
                  error_code = '0'
                  error_code = '10007'
                  error_code = '99999'
