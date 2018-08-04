@@ -13,7 +13,9 @@ error_code = '20010'  message = u'不存在父节点模块。'
 error_code = '20011'  message = u'所选环境已为启用状态。'
 error_code = '20012'  message = u'所选环境不存在。'
 error_code = '20013'  message = u'所选环境已为禁用状态。'
-
+error_code = '20014'  message = u'路径格式错误。'
+error_code = '20015'  message = u'API方法错误。'
+error_code = '20016'  message = u'API已经存在。'
 """
 from django.http import JsonResponse
 from project_manage.models import *
@@ -781,16 +783,68 @@ def environment_list(request):
 @api_view(['POST'])
 def create_api(request):
     """
-        POST请求，新增项目
+        POST请求，新增接口
         :param request: name，
         :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
                  error_code = '0'
-                 error_code = '20002'
+                 error_code = ''
                  error_code = '99999'
                  error_code = '90001'
     """
 
-    pass
+    name = request.POST.get('name', None)
+    desc = request.POST.get('desc', None)
+    path = request.POST.get('path', None)
+    method = request.POST.get('method', None)
+    proj_id = request.POST.get('projectid', None)
+    module_id = request.POST.get('moduleid', None)
+    data = ''
+
+    if name and proj_id and path and method and module_id:
+        try:
+            project = Project.objects.filter(id=proj_id, status=1)
+            if project.exists():
+                module = Module.objects.filter(id=module_id, is_del=1)
+                if module.exists():
+                    if path.endswith('/') and path.startswith('/'):
+                        if method in ('GET', 'POST'):
+                            if method == 'GET':
+                                method = 0
+                            else:
+                                method = 1
+                            if not Api.objects.filter(project=project.first(), is_del=1, path=path).exists():
+                                api = Api(name=name, desc=desc, project=project.first(), module=module.first(),
+                                          path=path, method=method)
+                                api.save()
+                                error_code = '0'
+                                message = u'新增API成功。'
+                                data = api.id
+                            else:
+                                error_code = '20016'
+                                message = u'API已经存在。'
+                        else:
+                            error_code = '20015'
+                            message = u'API方法错误。'
+                    else:
+                        error_code = '20014'
+                        message = u'路径格式错误。'
+
+                else:
+                    error_code = '20008'
+                    message = u'所选模块不存在。'
+            else:
+                error_code = '20001'
+                message = u'所选项目不存在。'
+        except Exception as e:
+            print(e)
+            error_code = '99999'
+            message = u'数据操作异常。'
+    else:
+        error_code = '90001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message, 'api_id': data}
+    return JsonResponse(resp)
 
 
 @api_view(['POST'])

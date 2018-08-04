@@ -38,7 +38,8 @@ class Environment(models.Model):
 
 class Api(models.Model):
     name = models.CharField(max_length=30, null=False)
-    host = models.CharField(max_length=20, null=False)
+    desc = models.CharField(max_length=20, null=True)
+    path = models.CharField(max_length=40, null=False, default='NULL')
     method = models.SmallIntegerField(choices=((0, 'GET'), (1, 'POST')), null=False)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     module = models.ForeignKey(Module, on_delete=models.CASCADE)

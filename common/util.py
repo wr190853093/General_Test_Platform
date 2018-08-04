@@ -19,7 +19,7 @@ def validate_ip(ip_str):
 def get_child(parent, result={}, data={}, node=[]):
     child = parent.get_children().filter(is_del=1, tree_id=parent.tree_id)
     for c in child:
-        ch = {}
+        ch = dict()
         ch['child_name'] = c.name
         ch['id'] = c.id
         ch['parent_id'] = c.parent_id
