@@ -16,6 +16,7 @@ error_code = '20013'  message = u'所选环境已为禁用状态。'
 error_code = '20014'  message = u'路径格式错误。'
 error_code = '20015'  message = u'API方法错误。'
 error_code = '20016'  message = u'API已经存在。'
+error_code = '20017'  message = u'所选接口不存在。'
 """
 from django.http import JsonResponse
 from project_manage.models import *
@@ -625,7 +626,7 @@ def delete_environment(request):
             if environment.exists():
                 environment.update(is_del='0')
                 error_code = '0'
-                message = u'删除模块成功。'
+                message = u'删除环境成功。'
             else:
                 error_code = '20012'
                 message = u'所选环境不存在。'
@@ -784,10 +785,14 @@ def environment_list(request):
 def create_api(request):
     """
         POST请求，新增接口
-        :param request: name，
+        :param request: name，desc，path，method，projectid，moduleid
         :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
                  error_code = '0'
-                 error_code = ''
+                 error_code = '20008'
+                 error_code = '20008'
+                 error_code = '20014'
+                 error_code = '20015'
+                 error_code = '20016'
                  error_code = '99999'
                  error_code = '90001'
     """
@@ -851,30 +856,109 @@ def create_api(request):
 def edit_api(request):
     """
         POST请求，新增项目
-        :param request: name，
-        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+        :param request: apiid,name，desc，path，method，projectid，moduleid，
+        :return: resp = {'error_code': error_code, 'message': message}
                  error_code = '0'
-                 error_code = '20002'
+                 error_code = '20008'
+                 error_code = '20014'
+                 error_code = '20015'
+                 error_code = '20016'
+                 error_code = '20017'
                  error_code = '99999'
                  error_code = '90001'
     """
 
-    pass
+    api_id = request.POST.get('apiid', None)
+    name = request.POST.get('name', None)
+    desc = request.POST.get('desc', None)
+    path = request.POST.get('path', None)
+    method = request.POST.get('method', None)
+    proj_id = request.POST.get('projectid', None)
+    module_id = request.POST.get('moduleid', None)
+
+    if api_id and name and proj_id and path and method and module_id:
+        try:
+            api = Api.objects.filter(id=api_id, is_del=1)
+            if api.exists():
+                project = Project.objects.filter(id=proj_id, status=1)
+                if project.exists():
+                    module = Module.objects.filter(id=module_id, is_del=1)
+                    if module.exists():
+                        if path.endswith('/') and path.startswith('/'):
+                            if method in ('GET', 'POST'):
+                                if method == 'GET':
+                                    method = 0
+                                else:
+                                    method = 1
+                                if not Api.objects.filter(project=project.first(), is_del=1, path=path).exclude(
+                                        id=api_id).exists():
+                                    api.update(name=name, desc=desc, project=project.first(), module=module.first(),
+                                               path=path, method=method)
+                                    error_code = '0'
+                                    message = u'编辑API成功。'
+                                else:
+                                    error_code = '20016'
+                                    message = u'API已经存在。'
+                            else:
+                                error_code = '20015'
+                                message = u'API方法错误。'
+                        else:
+                            error_code = '20014'
+                            message = u'路径格式错误。'
+                    else:
+                        error_code = '20008'
+                        message = u'所选模块不存在。'
+                else:
+                    error_code = '20001'
+                    message = u'所选项目不存在。'
+            else:
+                error_code = '20017'
+                message = u'所选API不存在。'
+        except Exception as e:
+            print(e)
+            error_code = '99999'
+            message = u'数据操作异常。'
+    else:
+        error_code = '90001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message}
+    return JsonResponse(resp)
 
 
 @api_view(['POST'])
 def delete_api(request):
     """
         POST请求，新增项目
-        :param request: name，
-        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+        :param request: apiid，
+        :return: resp = {'error_code': error_code, 'message': message}
                  error_code = '0'
-                 error_code = '20002'
+                 error_code = '20017'
                  error_code = '99999'
                  error_code = '90001'
     """
 
-    pass
+    api_id = request.POST.get('apiid', None)
+    if api_id:
+        try:
+            api = Api.objects.filter(id=api_id, is_del=1)
+            if api.exists():
+                api.update(is_del='0')
+                error_code = '0'
+                message = u'删除API成功。'
+            else:
+                error_code = '20017'
+                message = u'所选API不存在。'
+        except Exception as e:
+            print(e)
+            error_code = '99999'
+            message = u'数据操作异常。'
+    else:
+        error_code = '90001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message}
+    return JsonResponse(resp)
 
 
 @api_view(['GET'])
