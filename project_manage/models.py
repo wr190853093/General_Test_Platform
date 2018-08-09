@@ -80,6 +80,7 @@ class ResponsePara(models.Model):
     is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)
 
 
+# 暂时用不到
 class ComplexPara(models.Model):
     parent_para = models.ForeignKey(Parameter, related_name='parent_para', on_delete=models.CASCADE)
     chirld_para = models.ForeignKey(Parameter, related_name='chirld_para', on_delete=models.CASCADE)

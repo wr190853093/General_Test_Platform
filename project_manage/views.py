@@ -17,6 +17,9 @@ error_code = '20014'  message = u'路径格式错误。'
 error_code = '20015'  message = u'API方法错误。'
 error_code = '20016'  message = u'API已经存在。'
 error_code = '20017'  message = u'所选接口不存在。'
+error_code = '20018'  message = u'所选response parameter不存在。'
+error_code = '20020'  message = u'所选response parameter不存在。'
+error_code = '20019'  message = u'所选body parameter不存在。'
 """
 from django.http import JsonResponse
 from project_manage.models import *
@@ -44,7 +47,7 @@ def create_project(request):
                 project = Project(name=name)
                 project.save()
                 error_code = '0'
-                message = u'新增组织机构成功。'
+                message = u'新增项目成功。'
                 data = project.id
             else:
                 error_code = '20002'
@@ -495,18 +498,26 @@ def module_tree(request):
                  error_code = '90001'
     """
 
+    proj_id = request.GET.get('projectid', None)
     data = []
-    try:
-        root = Module.objects.filter(parent__isnull=True, is_del=1)
-        for r in root:
-            module = get_child(r, result={}, data={}, node=[])
-            data.append(module)
-        error_code = '0'
-        message = u'获取模块树成功。'
-    except Exception as e:
-        print(e)
-        error_code = '99999'
-        message = u'数据操作异常。'
+    error_code = ''
+    message = ''
+    if proj_id:
+        try:
+            project = Project.objects.filter(id=proj_id, status=1)
+            if project.exists():
+                root = Module.objects.filter(parent__isnull=True, is_del=1, project=project.first())
+            else:
+                root = Module.objects.filter(parent__isnull=True, is_del=1)
+            for r in root:
+                module = get_child(r, result={}, data={}, node=[])
+                data.append(module)
+            error_code = '0'
+            message = u'获取模块树成功。'
+        except Exception as e:
+            print(e)
+            error_code = '99999'
+            message = u'数据操作异常。'
 
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
@@ -784,7 +795,7 @@ def environment_list(request):
 @api_view(['POST'])
 def create_api(request):
     """
-        POST请求，新增接口
+        POST请求，新增API
         :param request: name，desc，path，method，projectid，moduleid
         :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
                  error_code = '0'
@@ -855,7 +866,7 @@ def create_api(request):
 @api_view(['POST'])
 def edit_api(request):
     """
-        POST请求，新增项目
+        POST请求，编辑API
         :param request: apiid,name，desc，path，method，projectid，moduleid，
         :return: resp = {'error_code': error_code, 'message': message}
                  error_code = '0'
@@ -929,7 +940,7 @@ def edit_api(request):
 @api_view(['POST'])
 def delete_api(request):
     """
-        POST请求，新增项目
+        POST请求，删除API
         :param request: apiid，
         :return: resp = {'error_code': error_code, 'message': message}
                  error_code = '0'
@@ -964,53 +975,144 @@ def delete_api(request):
 @api_view(['GET'])
 def api_list(request):
     """
-        GET请求，新增项目
-        :param request: name，
+        GET请求，获取API列表
+        :param request: name，moduleid,projectid
         :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
                  error_code = '0'
-                 error_code = '20002'
                  error_code = '99999'
-                 error_code = '90001'
     """
 
-    pass
+    name = request.GET.get('name', None)
+    module_id = request.GET.get('moduleid', None)
+    proj_id = request.GET.get('projectid', None)
+    data = []
+
+    try:
+        project = module = None
+        if proj_id:
+            project = Project.objects.filter(id=proj_id, status=1)
+        if module_id:
+            module = Module.objects.filter(id=module_id, is_del=1)
+
+        searchcondition = {'name__contains': name, 'module__in': module, 'project__in': project}
+        kwargs = getkwargs(searchcondition)
+        apis = Api.objects.filter(**kwargs).order_by('id')
+        for i in apis:
+            api = dict()
+            api['id'] = i.id
+            api['name'] = i.name
+            api['path'] = i.path
+            api['project'] = {'projectName': i.project.name, 'projectId': i.project.id}
+            api['method'] = i.method
+            api['desc'] = i.desc
+            api['module'] = {'moduleName': i.module.name, 'moduleId': i.module.id}
+
+            data.append(api)
+        error_code = '0'
+        message = u'获取环境列表成功。'
+
+    except Exception as e:
+        print(e)
+        error_code = '99999'
+        message = u'数据操作异常。'
+
+    resp = {'error_code': error_code, 'message': message, 'data': data}
+    return JsonResponse(resp)
 
 
 @api_view(['POST'])
 def add_headerpara(request):
     """
-        POST请求，新增项目
-        :param request: name，
+        POST请求，新增head parameter
+        :param request: apiid，key，desc，isnull，datatype
         :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
                  error_code = '0'
-                 error_code = '20002'
+                 error_code = '20017'
                  error_code = '99999'
                  error_code = '90001'
     """
+    api_id = request.POST.get('apiid', None)
+    key = request.POST.get('key', None)
+    desc = request.POST.get('desc', None)
+    is_null = request.POST.get('isnull', None)
+    data_type = request.POST.get('datatype', None)
 
-    pass
+    if api_id and key and desc and is_null and data_type:
+        try:
+            api = Api.objects.filter(id=api_id, is_del=1)
+            if api.exists():
+                api = api.first()
+                if int(data_type) in (0, 1, 2, 3, 4) and int(is_null) in (0, 1):
+                    para = Parameter(key=key, desc=desc, is_null=is_null, data_type=data_type)
+                    para.save()
+                    headpara = HeaderPara(api=api, para=para)
+                    headpara.save()
+                    error_code = '0'
+                    message = u'添加head parameter成功。'
+                else:
+                    error_code = '99999'
+                    message = u'数据操作异常。'
+            else:
+                error_code = '20017'
+                message = u'所选API不存在。'
+        except Exception as e:
+            print(e)
+            error_code = '99999'
+            message = u'数据操作异常。'
+    else:
+        error_code = '90001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message}
+    return JsonResponse(resp)
 
 
 @api_view(['POST'])
 def delete_headerpara(request):
     """
-        POST请求，新增项目
-        :param request: name，
+        POST请求，删除head parameter
+        :param request: headid，
         :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
                  error_code = '0'
-                 error_code = '20002'
+                 error_code = '20018'
                  error_code = '99999'
                  error_code = '90001'
     """
 
-    pass
+    head_id = request.POST.get('headid', None)
+
+    if head_id:
+        try:
+            headpara = HeaderPara.objects.filter(id=head_id, is_del=1)
+            if headpara.exists():
+                headpara = headpara.first()
+                para = headpara.para
+                headpara.is_del = 0
+                headpara.save()
+                para.is_del = 0
+                para.save()
+                error_code = '0'
+                message = u'删除head parameter成功。'
+            else:
+                error_code = '20018'
+                message = u'所选head parameter不存在。'
+        except Exception as e:
+            print(e)
+            error_code = '99999'
+            message = u'数据操作异常。'
+    else:
+        error_code = '90001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message}
+    return JsonResponse(resp)
 
 
 @api_view(['GET'])
 def headerpara_list(request):
     """
-        GET请求，新增项目
-        :param request: name，
+        GET请求，获取head parameter列表
+        :param request: apiid，
         :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
                  error_code = '0'
                  error_code = '20002'
@@ -1018,94 +1120,306 @@ def headerpara_list(request):
                  error_code = '90001'
     """
 
-    pass
+    api_id = request.GET.get('apiid', None)
+    data = []
+
+    if api_id:
+        try:
+            api = Api.objects.filter(id=api_id, is_del=1)
+            if api.exists():
+                api = api.first()
+                headers = HeaderPara.objects.filter(api=api, is_del=1)
+                for head in headers:
+                    para = dict()
+                    para['headid'] = head.id
+                    para['key'] = head.para.key
+                    para['isnull'] = head.para.get_is_null_display()
+                    para['desc'] = head.para.desc
+                    para['datatype'] = head.para.get_data_type_display()
+                    data.append(para)
+
+                error_code = '0'
+                message = u'获取headers列表成功。'
+            else:
+                error_code = '20017'
+                message = u'所选API不存在。'
+        except Exception as e:
+            print(e)
+            error_code = '99999'
+            message = u'数据操作异常。'
+    else:
+        error_code = '90001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message, 'data': data}
+    return JsonResponse(resp)
 
 
 @api_view(['POST'])
 def add_bodypara(request):
     """
-        POST请求，新增项目
-        :param request: name，
+        POST请求，新增body parameter
+        :param request: apiid，key，desc，isnull，datatype
         :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
                  error_code = '0'
-                 error_code = '20002'
+                 error_code = '20017'
                  error_code = '99999'
                  error_code = '90001'
     """
+    api_id = request.POST.get('apiid', None)
+    key = request.POST.get('key', None)
+    desc = request.POST.get('desc', None)
+    is_null = request.POST.get('isnull', None)
+    data_type = request.POST.get('datatype', None)
 
-    pass
+    if api_id and key and desc and is_null and data_type:
+        try:
+            api = Api.objects.filter(id=api_id, is_del=1)
+            if api.exists():
+                api = api.first()
+                if int(data_type) in (0, 1, 2, 3, 4) and int(is_null) in (0, 1):
+                    para = Parameter(key=key, desc=desc, is_null=is_null, data_type=data_type)
+                    para.save()
+                    bodypara = BodyPara(api=api, para=para)
+                    bodypara.save()
+                    error_code = '0'
+                    message = u'添加body parameter成功。'
+                else:
+                    error_code = '99999'
+                    message = u'数据操作异常。'
+            else:
+                error_code = '20017'
+                message = u'所选API不存在。'
+        except Exception as e:
+            print(e)
+            error_code = '99999'
+            message = u'数据操作异常。'
+    else:
+        error_code = '90001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message}
+    return JsonResponse(resp)
 
 
 @api_view(['POST'])
 def delete_bodypara(request):
     """
-        POST请求，新增项目
-        :param request: name，
+        POST请求，删除body parameter
+        :param request: bodyid，
         :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
                  error_code = '0'
-                 error_code = '20002'
+                 error_code = '20019'
                  error_code = '99999'
                  error_code = '90001'
     """
 
-    pass
+    body_id = request.POST.get('bodyid', None)
+
+    if body_id:
+        try:
+            bodypara = BodyPara.objects.filter(id=body_id, is_del=1)
+            if bodypara.exists():
+                bodypara = bodypara.first()
+                para = bodypara.para
+                bodypara.is_del = 0
+                bodypara.save()
+                para.is_del = 0
+                para.save()
+                error_code = '0'
+                message = u'删除body parameter成功。'
+            else:
+                error_code = '20019'
+                message = u'所选body parameter不存在。'
+        except Exception as e:
+            print(e)
+            error_code = '99999'
+            message = u'数据操作异常。'
+    else:
+        error_code = '90001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message}
+    return JsonResponse(resp)
 
 
 @api_view(['GET'])
 def bodypara_list(request):
     """
-        GET请求，新增项目
-        :param request: name，
+        GET请求，获取body parameter列表
+        :param request: apiid，
         :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
                  error_code = '0'
-                 error_code = '20002'
+                 error_code = '20017'
                  error_code = '99999'
                  error_code = '90001'
     """
 
-    pass
+    api_id = request.GET.get('apiid', None)
+    data = []
+
+    if api_id:
+        try:
+            api = Api.objects.filter(id=api_id, is_del=1)
+            if api.exists():
+                api = api.first()
+                bodyers = BodyPara.objects.filter(api=api, is_del=1)
+                for body in bodyers:
+                    para = dict()
+                    para['bodyid'] = body.id
+                    para['key'] = body.para.key
+                    para['isnull'] = body.para.get_is_null_display()
+                    para['desc'] = body.para.desc
+                    para['datatype'] = body.para.get_data_type_display()
+                    data.append(para)
+
+                error_code = '0'
+                message = u'获取Bodys列表成功。'
+            else:
+                error_code = '20017'
+                message = u'所选API不存在。'
+        except Exception as e:
+            print(e)
+            error_code = '99999'
+            message = u'数据操作异常。'
+    else:
+        error_code = '90001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message, 'data': data}
+    return JsonResponse(resp)
 
 
 @api_view(['POST'])
 def add_responsepara(request):
     """
-        POST请求，新增项目
-        :param request: name，
+        POST请求，新增response parameter
+        :param request: apiid，key，desc，isnull，datatype
         :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
                  error_code = '0'
-                 error_code = '20002'
+                 error_code = '20017'
                  error_code = '99999'
                  error_code = '90001'
     """
+    api_id = request.POST.get('apiid', None)
+    key = request.POST.get('key', None)
+    desc = request.POST.get('desc', None)
+    is_null = request.POST.get('isnull', None)
+    data_type = request.POST.get('datatype', None)
 
-    pass
+    if api_id and key and desc and is_null and data_type:
+        try:
+            api = Api.objects.filter(id=api_id, is_del=1)
+            if api.exists():
+                api = api.first()
+                if int(data_type) in (0, 1, 2, 3, 4) and int(is_null) in (0, 1):
+                    para = Parameter(key=key, desc=desc, is_null=is_null, data_type=data_type)
+                    para.save()
+                    responsepara = ResponsePara(api=api, para=para)
+                    responsepara.save()
+                    error_code = '0'
+                    message = u'添加response parameter成功。'
+                else:
+                    error_code = '99999'
+                    message = u'数据操作异常。'
+            else:
+                error_code = '20017'
+                message = u'所选API不存在。'
+        except Exception as e:
+            print(e)
+            error_code = '99999'
+            message = u'数据操作异常。'
+    else:
+        error_code = '90001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message}
+    return JsonResponse(resp)
 
 
 @api_view(['POST'])
 def delete_responsepara(request):
     """
-        POST请求，新增项目
-        :param request: name，
+        POST请求，删除response parameter
+        :param request: responseid，
         :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
                  error_code = '0'
-                 error_code = '20002'
+                 error_code = '20020'
                  error_code = '99999'
                  error_code = '90001'
     """
 
-    pass
+    response_id = request.POST.get('responseid', None)
+
+    if response_id:
+        try:
+            responsepara = ResponsePara.objects.filter(id=response_id, is_del=1)
+            if responsepara.exists():
+                responsepara = responsepara.first()
+                para = responsepara.para
+                responsepara.is_del = 0
+                responsepara.save()
+                para.is_del = 0
+                para.save()
+                error_code = '0'
+                message = u'删除response parameter成功。'
+            else:
+                error_code = '20020'
+                message = u'所选response parameter不存在。'
+        except Exception as e:
+            print(e)
+            error_code = '99999'
+            message = u'数据操作异常。'
+    else:
+        error_code = '90001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message}
+    return JsonResponse(resp)
 
 
 @api_view(['GET'])
 def responsepara_list(request):
     """
-        GET请求，新增项目
-        :param request: name，
+        GET请求，获取response parameter列表
+        :param request: apiid，
         :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
                  error_code = '0'
-                 error_code = '20002'
+                 error_code = '20017'
                  error_code = '99999'
                  error_code = '90001'
     """
 
-    pass
+    api_id = request.GET.get('apiid', None)
+    data = []
+
+    if api_id:
+        try:
+            api = Api.objects.filter(id=api_id, is_del=1)
+            if api.exists():
+                api = api.first()
+                responseers = ResponsePara.objects.filter(api=api, is_del=1)
+                for response in responseers:
+                    para = dict()
+                    para['responseid'] = response.id
+                    para['key'] = response.para.key
+                    para['isnull'] = response.para.get_is_null_display()
+                    para['desc'] = response.para.desc
+                    para['datatype'] = response.para.get_data_type_display()
+                    data.append(para)
+
+                error_code = '0'
+                message = u'获取responses列表成功。'
+            else:
+                error_code = '20017'
+                message = u'所选API不存在。'
+        except Exception as e:
+            print(e)
+            error_code = '99999'
+            message = u'数据操作异常。'
+    else:
+        error_code = '90001'
+        message = u'存在必填项为空.'
+
+    resp = {'error_code': error_code, 'message': message, 'data': data}
+    return JsonResponse(resp)
