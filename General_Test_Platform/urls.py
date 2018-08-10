@@ -1,4 +1,3 @@
-#coding:utf-8
 """General_Test_Platform URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:

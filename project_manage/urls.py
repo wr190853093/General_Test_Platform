@@ -1,6 +1,5 @@
-# coding:utf-8
 
-from django.urls import include, path
+from django.urls import path
 from project_manage.views import *
 
 urlpatterns = [

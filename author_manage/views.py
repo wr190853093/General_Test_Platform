@@ -1,4 +1,3 @@
-# coding:utf-8
 """
     error_code = '10001'  message = u'请先删除子节点组织机构再删除父节点组织机构。'
     error_code = '10002'  message = u'同节点组织机构名称重复。'

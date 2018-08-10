@@ -1,4 +1,3 @@
-# coding:utf-8
 """
 error_code = '20001'  message = u'所选项目不存在。'
 error_code = '20002'  message = u'项目名称重复。'
