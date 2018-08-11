@@ -5,7 +5,7 @@ import time
 import django
 import os
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hit.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "General_Test_Platform.settings")
 django.setup()
 
 from ceshi_manage.models import *

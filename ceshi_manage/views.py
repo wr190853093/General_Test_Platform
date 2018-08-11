@@ -219,3 +219,78 @@ def delete_checks(request):
     """
 
     pass
+
+
+@api_view(['POST'])
+def create_task(request):
+    """
+        POST请求，新建任务
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
+    pass
+
+
+@api_view(['POST'])
+def edit_task(request):
+    """
+        POST请求，编辑任务
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
+    pass
+
+
+@api_view(['POST'])
+def run_task(request):
+    """
+        POST请求，运行任务
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
+    pass
+
+
+@api_view(['GET'])
+def task_list(request):
+    """
+        POST请求，获取任务列表
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
+    pass
+
+
+@api_view(['GET'])
+def task_case(request):
+    """
+        GET请求，获取任务用例列表
+        :param request: name，
+        :return: resp = {'error_code': error_code, 'message': message, 'project_id': data}
+                 error_code = '0'
+                 error_code = '20002'
+                 error_code = '99999'
+                 error_code = '90001'
+    """
+
+    pass
