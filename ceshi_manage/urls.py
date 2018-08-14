@@ -13,11 +13,8 @@ urlpatterns = [
     path(r'addstep/', add_step),  # 增加步骤
     path(r'getsteplist/', step_list),  # 获取步骤列表
     path(r'deletestep/', delete_step),  # 删除步骤
-    path(r'confheaders/', conf_headers),  # 配置Header参数
-    path(r'confbody/', conf_body),  # 配置body参数
-    path(r'addchecks/', add_checks),  # 新增检查点
-    path(r'editchecks/', edit_checks),  # 新增检查点
-    path(r'deletechecks/', delete_checks),  # 删除检查点
+    path(r'getcaseinfo/', case_info),  # 查看用例信息
+
 
     # 任务管理模块接口
     path(r'createtask/', create_task),  # 新建任务

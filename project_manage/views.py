@@ -9,9 +9,9 @@ error_code = '20007'  message = u'请先删除子节点模块再删除父节点�
 error_code = '20008'  message = u'所选模块不存在。'
 error_code = '20009'  message = u'同节点模块名称重复。'
 error_code = '20010'  message = u'不存在父节点模块。'
-error_code = '20011'  message = u'所选环境已为启用状态。'
+error_code = '20011'  message = u'所选环境已为禁用状态。'
 error_code = '20012'  message = u'所选环境不存在。'
-error_code = '20013'  message = u'所选环境已为禁用状态。'
+error_code = '20013'  message = u'所选环境已为启用状态。'
 error_code = '20014'  message = u'路径格式错误。'
 error_code = '20015'  message = u'API方法错误。'
 error_code = '20016'  message = u'API已经存在。'
@@ -676,7 +676,7 @@ def enable_evnironment(request):
                     message = u'修改环境状态成功。'
                 else:
                     error_code = '20013'
-                    message = u'所选环境已为禁用状态。'
+                    message = u'所选环境已为启用状态。'
             else:
                 error_code = '20012'
                 message = u'所选环境不存在。'
@@ -716,7 +716,7 @@ def unenable_environment(request):
                     message = u'修改环境状态成功。'
                 else:
                     error_code = '20011'
-                    message = u'所选环境已为启用状态。'
+                    message = u'所选环境已为禁用状态。'
             else:
                 error_code = '20012'
                 message = u'所选环境不存在。'

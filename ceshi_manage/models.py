@@ -19,21 +19,25 @@ class Step(models.Model):
     case = models.ForeignKey(Case, on_delete=models.CASCADE)
     api = models.ForeignKey(Api, on_delete=models.CASCADE)
     order = models.IntegerField(null=False, default=1)
-    para = models.ForeignKey(Parameter, on_delete=models.CASCADE)
-    para_type = models.SmallIntegerField(
-        choices=((10, 'herader para'), (21, 'body para urlencoded'), (22, 'body para json')), null=False)
-    key = models.CharField(max_length=20, null=False)
-    value = models.CharField(max_length=400, null=False)
+    headers = models.TextField(null=False, default='NULL')
+    body = models.TextField(null=False, default='NULL')
+    check = models.TextField(null=False, default='NULL')
+    is_del = models.SmallIntegerField(choices=((0, u'已删除'), (1, u'未删除')), null=False, default=1)
+
+    # para_type = models.SmallIntegerField(
+    #     choices=((10, 'herader para'), (21, 'body para urlencoded'), (22, 'body para json')), null=False)
+    # key = models.CharField(max_length=20, null=False)
+    # value = models.CharField(max_length=400, null=False)
 
     def __str__(self):
         return self.name
 
 
-class CheckPoint(models.Model):
-    step = models.ForeignKey(Step, on_delete=models.CASCADE)
-    type = models.SmallIntegerField(choices=((0, 'herader value'), (2, 'body value'),), null=False)
-    key = models.CharField(max_length=20, null=False)
-    value = models.CharField(max_length=400, null=False)
+# class CheckPoint(models.Model):
+#     step = models.ForeignKey(Step, on_delete=models.CASCADE)
+#     type = models.SmallIntegerField(choices=((0, 'herader value'), (2, 'body value'),), null=False)
+#     key = models.CharField(max_length=20, null=False)
+#     value = models.CharField(max_length=400, null=False)
 
 
 class Task(models.Model):
