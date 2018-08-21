@@ -6,7 +6,7 @@ import sys
 from imp import reload
 
 reload(sys)
-sys.setdefaultencoding('utf8')
+# sys.setdefaultencoding('utf8')
 import pymysql.cursors
 
 
@@ -25,8 +25,7 @@ class client():
         elif self.method == 0:
             self.response = requests.request('GET', url=self.url, headers=self.headers, params=self.data)
         else:
-            print
-            '不支持的http方法类型'
+            print('不支持的http方法类型')
 
     def response2json(self):
         try:
@@ -60,7 +59,7 @@ class client():
 
     def check_node_exist(self, kargs):
         result = self.__get_value_from_path(kargs.get('node_path', None))
-        assert result != None, self.__format(kargs.get('message', None), kargs.get('node_path', None) + ' 存在', result)
+        assert result is not None, self.__format(kargs.get('message', None), kargs.get('node_path', None) + ' 存在', result)
 
     def check_nodeText_equals(self, kargs):
         text = None

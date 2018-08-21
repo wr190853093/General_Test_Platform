@@ -1,15 +1,15 @@
 """
-    error_code = '10001'  message = u'请先删除子节点组织机构再删除父节点组织机构。'
-    error_code = '10002'  message = u'同节点组织机构名称重复。'
-    error_code = '10003'  message = u'不存在父节点组织机构。'
-    error_code = '10004'  message = u'所选组织机构不存在。
-    error_code = '10005'  message = u'员工角色错误。'
-    error_code = '10006'  message = u'用户名已经存在。'
-    error_code = '10007'  message = u'所选员工不存在。'
-    error_code = '10008'  message = u'所选员工已为在职状态。'
-    error_code = '10009'  message = u'所选员工已为离职状态。'
-    error_code = '99999   message = u'数据操作异常。'
-    error_code = '90001'  message = u'存在必填项为空.'
+    error_code = '10001'  message = '请先删除子节点组织机构再删除父节点组织机构。'
+    error_code = '10002'  message = '同节点组织机构名称重复。'
+    error_code = '10003'  message = '不存在父节点组织机构。'
+    error_code = '10004'  message = '所选组织机构不存在。
+    error_code = '10005'  message = '员工角色错误。'
+    error_code = '10006'  message = '用户名已经存在。'
+    error_code = '10007'  message = '所选员工不存在。'
+    error_code = '10008'  message = '所选员工已为在职状态。'
+    error_code = '10009'  message = '所选员工已为离职状态。'
+    error_code = '99999   message = '数据操作异常。'
+    error_code = '90001'  message = '存在必填项为空.'
 """
 from django.http import JsonResponse
 from author_manage.models import *
@@ -43,36 +43,36 @@ def create_org(request):
                         org = Organization(name=name, is_del=is_del, parent=parent.first())
                         org.save()
                         error_code = '0'
-                        message = u'新增组织机构成功。'
+                        message = '新增组织机构成功。'
                         data = org.id
                     else:
                         error_code = '10002'
-                        message = u'同节点组织机构名称重复。'
+                        message = '同节点组织机构名称重复。'
                 else:
                     error_code = '10003'
-                    message = u'不存在父节点组织机构。'
+                    message = '不存在父节点组织机构。'
             except Exception as e:
                 print(e)
                 error_code = '99999'
-                message = u'数据操作异常。'
+                message = '数据操作异常。'
         else:
             try:
                 if not Organization.objects.filter(parent__isnull=True, name=name, is_del=1).exists():
                     org = Organization(name=name, is_del=is_del)
                     org.save()
                     error_code = '0'
-                    message = u'新增组织机构成功。'
+                    message = '新增组织机构成功。'
                     data = org.id
                 else:
                     error_code = '10002'
-                    message = u'同节点组织机构名称重复。'
+                    message = '同节点组织机构名称重复。'
             except Exception as e:
                 print(e)
                 error_code = '99999'
-                message = u'数据操作异常。'
+                message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, 'org_id': data}
     return JsonResponse(resp)
@@ -102,20 +102,20 @@ def delete_org(request):
                 if not Organization.objects.filter(parent=org_id, is_del=1).exists():
                     org.update(is_del='0')
                     error_code = '0'
-                    message = u'删除组织机构成功。'
+                    message = '删除组织机构成功。'
                 else:
                     error_code = '10001'
-                    message = u'请先删除子节点组织机构再删除父节点组织机构。'
+                    message = '请先删除子节点组织机构再删除父节点组织机构。'
             else:
                 error_code = '10004'
-                message = u'所选组织机构不存在。'
+                message = '所选组织机构不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -146,20 +146,20 @@ def edit_org(request):
                 if not Organization.objects.exclude(id=org_id).filter(name=name, parent=parent_org, is_del=1).exists():
                     org.update(name=name)
                     error_code = '0'
-                    message = u'编辑组织机构成功。'
+                    message = '编辑组织机构成功。'
                 else:
                     error_code = '10002'
-                    message = u'同节点组织机构名称重复。'
+                    message = '同节点组织机构名称重复。'
             else:
                 error_code = '10004'
-                message = u'所选组织机构不存在。'
+                message = '所选组织机构不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -182,11 +182,11 @@ def org_tree(request):
             org = get_child(r, result={}, data={}, node=[])
             data.append(org)
         error_code = '0'
-        message = u'获取组织机构树成功。'
+        message = '获取组织机构树成功。'
     except Exception as e:
         print(e)
         error_code = '99999'
-        message = u'数据操作异常。'
+        message = '数据操作异常。'
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
 
@@ -233,28 +233,28 @@ def create_user(request):
                                          role=role, password=password, is_del=is_del, status=status)
                             user.save()
                             error_code = '0'
-                            message = u'新增员工成功。'
+                            message = '新增员工成功。'
                             data = user.id
                         else:
                             error_code = '10006'
-                            message = u'用户名已经存在。'
+                            message = '用户名已经存在。'
                     else:
                         error_code = '10004'
-                        message = u'所选组织机构不存在。'
+                        message = '所选组织机构不存在。'
                 except Exception as e:
                     print(e)
                     error_code = '99999'
-                    message = u'数据操作异常。'
+                    message = '数据操作异常。'
             else:
                 error_code = '10005'
-                message = u'员工角色错误。'
+                message = '员工角色错误。'
         except Exception as e:
             print(e)
             error_code = '10005'
-            message = u'员工角色错误。'
+            message = '员工角色错误。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, 'user_id': data}
     return JsonResponse(resp)
@@ -279,17 +279,17 @@ def delete_user(request):
             if user.exists() and user.first().is_del == 1:
                 user.update(is_del='0')
                 error_code = '0'
-                message = u'删除员工成功。'
+                message = '删除员工成功。'
             else:
                 error_code = '10007'
-                message = u'所选员工不存在。'
+                message = '所选员工不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -331,30 +331,30 @@ def edit_user(request):
                                 user.update(name=name, username=username, email=email, org=organize.first(),
                                             role=role)
                                 error_code = '0'
-                                message = u'编辑员工信息成功。'
+                                message = '编辑员工信息成功。'
                             else:
                                 error_code = '10006'
-                                message = u'用户名已经存在。'
+                                message = '用户名已经存在。'
                         else:
                             error_code = '10007'
-                            message = u'所选员工不存在。'
+                            message = '所选员工不存在。'
                     else:
                         error_code = '10004'
-                        message = u'所选组织机构不存在。'
+                        message = '所选组织机构不存在。'
                 except Exception as e:
                     print(e)
                     error_code = '99999'
-                    message = u'数据操作异常。'
+                    message = '数据操作异常。'
             else:
                 error_code = '10005'
-                message = u'员工角色错误。'
+                message = '员工角色错误。'
         except Exception as e:
             print(e)
             error_code = '10005'
-            message = u'员工角色错误。'
+            message = '员工角色错误。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -382,20 +382,20 @@ def enable_user(request):
                 if user.first().status == 0:
                     user.update(status=1)
                     error_code = '0'
-                    message = u'修改员工状态成功。'
+                    message = '修改员工状态成功。'
                 else:
                     error_code = '10008'
-                    message = u'所选员工已为在职状态。'
+                    message = '所选员工已为在职状态。'
             else:
                 error_code = '10007'
-                message = u'所选员工不存在。'
+                message = '所选员工不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -423,20 +423,20 @@ def unenable_user(request):
                 if user.first().status == 1:
                     user.update(status=0)
                     error_code = '0'
-                    message = u'修改员工状态成功。'
+                    message = '修改员工状态成功。'
                 else:
                     error_code = '10009'
-                    message = u'所选员工已为离职状态。'
+                    message = '所选员工已为离职状态。'
             else:
                 error_code = '10007'
-                message = u'所选员工不存在。'
+                message = '所选员工不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -466,7 +466,7 @@ def user_list(request):
                 users = Users.objects.filter(org=organize.first(), is_del=1)
             else:
                 error_code = '10004'
-                message = u'所选组织机构不存在。'
+                message = '所选组织机构不存在。'
                 resp = {'error_code': error_code, 'message': message, 'data': data}
                 return JsonResponse(resp)
         else:
@@ -482,11 +482,11 @@ def user_list(request):
             user['status'] = u.get_status_display()
             data.append(user)
         error_code = '0'
-        message = u'获取员工列表成功。'
+        message = '获取员工列表成功。'
     except Exception as e:
         print(e)
         error_code = '99999'
-        message = u'数据操作异常。'
+        message = '数据操作异常。'
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
 
@@ -519,17 +519,17 @@ def user_info(request):
                 user['role'] = u.get_role_display()
                 data.append(user)
                 error_code = '0'
-                message = u'获取员工信息成功。'
+                message = '获取员工信息成功。'
             else:
                 error_code = '10007'
-                message = u'所选员工不存在。'
+                message = '所选员工不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
 
@@ -554,16 +554,16 @@ def edit_password(request):
             if users.exists():
                 users.update(password=pwd)
                 error_code = '0'
-                message = u'重置密码成功。'
+                message = '重置密码成功。'
             else:
                 error_code = '10007'
-                message = u'所选员工不存在。'
+                message = '所选员工不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)

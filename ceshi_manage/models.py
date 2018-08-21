@@ -51,8 +51,11 @@ class Task(models.Model):
 
 
 class Report(models.Model):
-    task = models.ManyToManyField(Task)
-    file_name = models.CharField(max_length=30, null=False)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    file_name = models.CharField(max_length=100, null=False)
+    status = models.IntegerField(choices=((0, '运行中'), (1, '结束')), null=True)
+    # time = models.TimeField()
+    time = models.FloatField(null=False, unique=True)
 
     def __str__(self):
         return self.file_name

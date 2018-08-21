@@ -1,24 +1,24 @@
 """
-error_code = '20001'  message = u'所选项目不存在。'
-error_code = '20002'  message = u'项目名称重复。'
-error_code = '20003'  message = u'项目已为归档状态。'
-error_code = '20004'  message = u'所选员工不存在。'
-error_code = '20005'  message = u'所选项目没有成员。'
-error_code = '20006'  message = u'所选员工不存在或不在此项目中。'
-error_code = '20007'  message = u'请先删除子节点模块再删除父节点模块。'
-error_code = '20008'  message = u'所选模块不存在。'
-error_code = '20009'  message = u'同节点模块名称重复。'
-error_code = '20010'  message = u'不存在父节点模块。'
-error_code = '20011'  message = u'所选环境已为禁用状态。'
-error_code = '20012'  message = u'所选环境不存在。'
-error_code = '20013'  message = u'所选环境已为启用状态。'
-error_code = '20014'  message = u'路径格式错误。'
-error_code = '20015'  message = u'API方法错误。'
-error_code = '20016'  message = u'API已经存在。'
-error_code = '20017'  message = u'所选接口不存在。'
-error_code = '20018'  message = u'所选response parameter不存在。'
-error_code = '20020'  message = u'所选response parameter不存在。'
-error_code = '20019'  message = u'所选body parameter不存在。'
+error_code = '20001'  message = '所选项目不存在。'
+error_code = '20002'  message = '项目名称重复。'
+error_code = '20003'  message = '项目已为归档状态。'
+error_code = '20004'  message = '所选员工不存在。'
+error_code = '20005'  message = '所选项目没有成员。'
+error_code = '20006'  message = '所选员工不存在或不在此项目中。'
+error_code = '20007'  message = '请先删除子节点模块再删除父节点模块。'
+error_code = '20008'  message = '所选模块不存在。'
+error_code = '20009'  message = '同节点模块名称重复。'
+error_code = '20010'  message = '不存在父节点模块。'
+error_code = '20011'  message = '所选环境已为禁用状态。'
+error_code = '20012'  message = '所选环境不存在。'
+error_code = '20013'  message = '所选环境已为启用状态。'
+error_code = '20014'  message = '路径格式错误。'
+error_code = '20015'  message = 'API方法错误。'
+error_code = '20016'  message = 'API已经存在。'
+error_code = '20017'  message = '所选接口不存在。'
+error_code = '20018'  message = '所选response parameter不存在。'
+error_code = '20020'  message = '所选response parameter不存在。'
+error_code = '20019'  message = '所选body parameter不存在。'
 """
 from django.http import JsonResponse
 from project_manage.models import *
@@ -46,18 +46,18 @@ def create_project(request):
                 project = Project(name=name)
                 project.save()
                 error_code = '0'
-                message = u'新增项目成功。'
+                message = '新增项目成功。'
                 data = project.id
             else:
                 error_code = '20002'
-                message = u'项目名称重复。'
+                message = '项目名称重复。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, 'project_id': data}
     return JsonResponse(resp)
@@ -84,20 +84,20 @@ def edit_project(request):
                 if not Project.objects.exclude(id=proj_id).filter(name=name).exists():
                     project.update(name=name)
                     error_code = '0'
-                    message = u'项目编辑成功。'
+                    message = '项目编辑成功。'
                 else:
                     error_code = '20002'
-                    message = u'项目名称重复。'
+                    message = '项目名称重复。'
             else:
                 error_code = '20001'
-                message = u'所选项目不存在。'
+                message = '所选项目不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, }
     return JsonResponse(resp)
@@ -123,20 +123,20 @@ def file_project(request):
                 if project.first().status != 0:
                     project.update(status=0)
                     error_code = '0'
-                    message = u'项目归档成功。'
+                    message = '项目归档成功。'
                 else:
                     error_code = '20003'
-                    message = u'项目已为归档状态。'
+                    message = '项目已为归档状态。'
             else:
                 error_code = '20001'
-                message = u'所选项目不存在。'
+                message = '所选项目不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, }
     return JsonResponse(resp)
@@ -168,11 +168,11 @@ def project_list(request):
             project['status'] = pro.get_status_display()
             data.append(project)
         error_code = '0'
-        message = u'获取项目列表成功。'
+        message = '获取项目列表成功。'
     except Exception as e:
         print(e)
         error_code = '99999'
-        message = u'数据操作异常。'
+        message = '数据操作异常。'
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
 
@@ -206,20 +206,20 @@ def add_member(request):
                     for user in users:
                         project.team.add(user)
                     error_code = '0'
-                    message = u'添加成员成功。'
+                    message = '添加成员成功。'
                 else:
                     error_code = '20004'
-                    message = u'所选员工不存在。'
+                    message = '所选员工不存在。'
             else:
                 error_code = '20001'
-                message = u'所选项目不存在。'
+                message = '所选项目不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, }
     return JsonResponse(resp)
@@ -244,10 +244,10 @@ def member_list(request):
             project = Project.objects.filter(id=proj_id, status=1)
             if project.exists():
                 project = project.first()
-                users = project.team
+                users = project.team.all()
                 if users.exists():
 
-                    for user in users.all():
+                    for user in users:
                         member = {}
                         member_id = user.id
                         name = user.name
@@ -257,20 +257,20 @@ def member_list(request):
                         member['id'] = member_id
                         data.append(member)
                     error_code = '0'
-                    message = u'获取成员成功。'
+                    message = '获取成员成功。'
                 else:
                     error_code = '20005'
-                    message = u'所选项目没有成员。'
+                    message = '所选项目没有成员。'
             else:
                 error_code = '20001'
-                message = u'所选项目不存在。'
+                message = '所选项目不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
@@ -308,20 +308,20 @@ def delete_member(request):
                         project.team.remove(member)
                     else:
                         error_code = '0'
-                        message = u'删除员工成功。'
+                        message = '删除员工成功。'
                 else:
                     error_code = '20006'
-                    message = u'所选员工不存在或不在此项目中。'
+                    message = '所选员工不存在或不在此项目中。'
             else:
                 error_code = '20001'
-                message = u'所选项目不存在。'
+                message = '所选项目不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -358,43 +358,43 @@ def create_module(request):
                                 module = Module(name=name, parent=parent.first(), project=project.first())
                                 module.save()
                                 error_code = '0'
-                                message = u'新增模块成功。'
+                                message = '新增模块成功。'
                                 data = module.id
                             else:
                                 error_code = '20009'
-                                message = u'同节点模块名称重复。'
+                                message = '同节点模块名称重复。'
                         else:
                             error_code = '20010'
-                            message = u'不存在父节点模块。'
+                            message = '不存在父节点模块。'
                     except Exception as e:
                         print(e)
                         error_code = '99999'
-                        message = u'数据操作异常。'
+                        message = '数据操作异常。'
                 else:
                     try:
                         if not Module.objects.filter(parent__isnull=True, name=name, is_del=1).exists():
                             module = Module(name=name, project=project.first())
                             module.save()
                             error_code = '0'
-                            message = u'新增模块成功。'
+                            message = '新增模块成功。'
                             data = module.id
                         else:
                             error_code = '20009'
-                            message = u'同节点模块名称重复。'
+                            message = '同节点模块名称重复。'
                     except Exception as e:
                         print(e)
                         error_code = '99999'
-                        message = u'数据操作异常。'
+                        message = '数据操作异常。'
             else:
                 error_code = '20001'
-                message = u'所选项目不存在。'
+                message = '所选项目不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, 'module_id': data}
     return JsonResponse(resp)
@@ -425,20 +425,20 @@ def edit_module(request):
                 if not Module.objects.exclude(id=module_id).filter(name=name, parent=parent_module, is_del=1).exists():
                     module.update(name=name)
                     error_code = '0'
-                    message = u'编辑模块成功。'
+                    message = '编辑模块成功。'
                 else:
                     error_code = '20009'
-                    message = u'同节点模块名称重复。'
+                    message = '同节点模块名称重复。'
             else:
                 error_code = '20008'
-                message = u'所选模块不存在。'
+                message = '所选模块不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -467,20 +467,20 @@ def delete_module(request):
                 if not Module.objects.filter(parent=module_id, is_del=1).exists():
                     module.update(is_del='0')
                     error_code = '0'
-                    message = u'删除模块成功。'
+                    message = '删除模块成功。'
                 else:
                     error_code = '20007'
-                    message = u'请先删除子节点模块再删除父节点模块。'
+                    message = '请先删除子节点模块再删除父节点模块。'
             else:
                 error_code = '20008'
-                message = u'所选模块不存在。'
+                message = '所选模块不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -512,11 +512,11 @@ def module_tree(request):
                 module = get_child(r, result={}, data={}, node=[])
                 data.append(module)
             error_code = '0'
-            message = u'获取模块树成功。'
+            message = '获取模块树成功。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
 
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
@@ -547,22 +547,22 @@ def create_environment(request):
                     environment = Environment(name=name, host=host, type=env_type, project=project.first())
                     environment.save()
                     error_code = '0'
-                    message = u'新增环境成功。'
+                    message = '新增环境成功。'
                     data = environment.id
 
                 else:
                     error_code = '20001'
-                    message = u'所选项目不存在。'
+                    message = '所选项目不存在。'
             else:
                 error_code = '99999'
-                message = u'数据操作异常。'
+                message = '数据操作异常。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
@@ -595,23 +595,23 @@ def edit_environment(request):
                     if project.exists():
                         environment.update(name=name, host=host, type=env_type, project=project.first())
                         error_code = '0'
-                        message = u'编辑环境成功。'
+                        message = '编辑环境成功。'
                     else:
                         error_code = '20001'
-                        message = u'所选项目不存在。'
+                        message = '所选项目不存在。'
                 else:
                     error_code = '99999'
-                    message = u'数据操作异常。'
+                    message = '数据操作异常。'
             else:
                 error_code = '20012'
-                message = u'所选环境不存在。'
+                message = '所选环境不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -636,17 +636,17 @@ def delete_environment(request):
             if environment.exists():
                 environment.update(is_del='0')
                 error_code = '0'
-                message = u'删除环境成功。'
+                message = '删除环境成功。'
             else:
                 error_code = '20012'
-                message = u'所选环境不存在。'
+                message = '所选环境不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -673,20 +673,20 @@ def enable_evnironment(request):
                 if environment.first().status == 0:
                     environment.update(status=1)
                     error_code = '0'
-                    message = u'修改环境状态成功。'
+                    message = '修改环境状态成功。'
                 else:
                     error_code = '20013'
-                    message = u'所选环境已为启用状态。'
+                    message = '所选环境已为启用状态。'
             else:
                 error_code = '20012'
-                message = u'所选环境不存在。'
+                message = '所选环境不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -713,20 +713,20 @@ def unenable_environment(request):
                 if environment.first().status == 1:
                     environment.update(status=0)
                     error_code = '0'
-                    message = u'修改环境状态成功。'
+                    message = '修改环境状态成功。'
                 else:
                     error_code = '20011'
-                    message = u'所选环境已为禁用状态。'
+                    message = '所选环境已为禁用状态。'
             else:
                 error_code = '20012'
-                message = u'所选环境不存在。'
+                message = '所选环境不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -773,19 +773,19 @@ def environment_list(request):
 
                     data.append(evironments)
                 error_code = '0'
-                message = u'获取环境列表成功。'
+                message = '获取环境列表成功。'
 
             else:
                 error_code = '20001'
-                message = u'所选项目不存在。'
+                message = '所选项目不存在。'
 
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
@@ -832,31 +832,31 @@ def create_api(request):
                                           path=path, method=method)
                                 api.save()
                                 error_code = '0'
-                                message = u'新增API成功。'
+                                message = '新增API成功。'
                                 data = api.id
                             else:
                                 error_code = '20016'
-                                message = u'API已经存在。'
+                                message = 'API已经存在。'
                         else:
                             error_code = '20015'
-                            message = u'API方法错误。'
+                            message = 'API方法错误。'
                     else:
                         error_code = '20014'
-                        message = u'路径格式错误。'
+                        message = '路径格式错误。'
 
                 else:
                     error_code = '20008'
-                    message = u'所选模块不存在。'
+                    message = '所选模块不存在。'
             else:
                 error_code = '20001'
-                message = u'所选项目不存在。'
+                message = '所选项目不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, 'api_id': data}
     return JsonResponse(resp)
@@ -905,32 +905,32 @@ def edit_api(request):
                                     api.update(name=name, desc=desc, project=project.first(), module=module.first(),
                                                path=path, method=method)
                                     error_code = '0'
-                                    message = u'编辑API成功。'
+                                    message = '编辑API成功。'
                                 else:
                                     error_code = '20016'
-                                    message = u'API已经存在。'
+                                    message = 'API已经存在。'
                             else:
                                 error_code = '20015'
-                                message = u'API方法错误。'
+                                message = 'API方法错误。'
                         else:
                             error_code = '20014'
-                            message = u'路径格式错误。'
+                            message = '路径格式错误。'
                     else:
                         error_code = '20008'
-                        message = u'所选模块不存在。'
+                        message = '所选模块不存在。'
                 else:
                     error_code = '20001'
-                    message = u'所选项目不存在。'
+                    message = '所选项目不存在。'
             else:
                 error_code = '20017'
-                message = u'所选API不存在。'
+                message = '所选API不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -955,17 +955,17 @@ def delete_api(request):
             if api.exists():
                 api.update(is_del='0')
                 error_code = '0'
-                message = u'删除API成功。'
+                message = '删除API成功。'
             else:
                 error_code = '20017'
-                message = u'所选API不存在。'
+                message = '所选API不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -1008,12 +1008,12 @@ def api_list(request):
 
             data.append(api)
         error_code = '0'
-        message = u'获取环境列表成功。'
+        message = '获取环境列表成功。'
 
     except Exception as e:
         print(e)
         error_code = '99999'
-        message = u'数据操作异常。'
+        message = '数据操作异常。'
 
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
@@ -1047,20 +1047,20 @@ def add_headerpara(request):
                     headpara = HeaderPara(api=api, para=para)
                     headpara.save()
                     error_code = '0'
-                    message = u'添加head parameter成功。'
+                    message = '添加head parameter成功。'
                 else:
                     error_code = '99999'
-                    message = u'数据操作异常。'
+                    message = '数据操作异常。'
             else:
                 error_code = '20017'
-                message = u'所选API不存在。'
+                message = '所选API不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -1091,17 +1091,17 @@ def delete_headerpara(request):
                 para.is_del = 0
                 para.save()
                 error_code = '0'
-                message = u'删除head parameter成功。'
+                message = '删除head parameter成功。'
             else:
                 error_code = '20018'
-                message = u'所选head parameter不存在。'
+                message = '所选head parameter不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -1138,17 +1138,17 @@ def headerpara_list(request):
                     data.append(para)
 
                 error_code = '0'
-                message = u'获取headers列表成功。'
+                message = '获取headers列表成功。'
             else:
                 error_code = '20017'
-                message = u'所选API不存在。'
+                message = '所选API不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
@@ -1182,20 +1182,20 @@ def add_bodypara(request):
                     bodypara = BodyPara(api=api, para=para)
                     bodypara.save()
                     error_code = '0'
-                    message = u'添加body parameter成功。'
+                    message = '添加body parameter成功。'
                 else:
                     error_code = '99999'
-                    message = u'数据操作异常。'
+                    message = '数据操作异常。'
             else:
                 error_code = '20017'
-                message = u'所选API不存在。'
+                message = '所选API不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -1226,17 +1226,17 @@ def delete_bodypara(request):
                 para.is_del = 0
                 para.save()
                 error_code = '0'
-                message = u'删除body parameter成功。'
+                message = '删除body parameter成功。'
             else:
                 error_code = '20019'
-                message = u'所选body parameter不存在。'
+                message = '所选body parameter不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -1273,17 +1273,17 @@ def bodypara_list(request):
                     data.append(para)
 
                 error_code = '0'
-                message = u'获取Bodys列表成功。'
+                message = '获取Bodys列表成功。'
             else:
                 error_code = '20017'
-                message = u'所选API不存在。'
+                message = '所选API不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)
@@ -1317,20 +1317,20 @@ def add_responsepara(request):
                     responsepara = ResponsePara(api=api, para=para)
                     responsepara.save()
                     error_code = '0'
-                    message = u'添加response parameter成功。'
+                    message = '添加response parameter成功。'
                 else:
                     error_code = '99999'
-                    message = u'数据操作异常。'
+                    message = '数据操作异常。'
             else:
                 error_code = '20017'
-                message = u'所选API不存在。'
+                message = '所选API不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -1361,17 +1361,17 @@ def delete_responsepara(request):
                 para.is_del = 0
                 para.save()
                 error_code = '0'
-                message = u'删除response parameter成功。'
+                message = '删除response parameter成功。'
             else:
                 error_code = '20020'
-                message = u'所选response parameter不存在。'
+                message = '所选response parameter不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message}
     return JsonResponse(resp)
@@ -1408,17 +1408,17 @@ def responsepara_list(request):
                     data.append(para)
 
                 error_code = '0'
-                message = u'获取responses列表成功。'
+                message = '获取responses列表成功。'
             else:
                 error_code = '20017'
-                message = u'所选API不存在。'
+                message = '所选API不存在。'
         except Exception as e:
             print(e)
             error_code = '99999'
-            message = u'数据操作异常。'
+            message = '数据操作异常。'
     else:
         error_code = '90001'
-        message = u'存在必填项为空.'
+        message = '存在必填项为空.'
 
     resp = {'error_code': error_code, 'message': message, 'data': data}
     return JsonResponse(resp)

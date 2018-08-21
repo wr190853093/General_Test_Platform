@@ -9,7 +9,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "General_Test_Platform.settings"
 django.setup()
 
 from ceshi_manage.models import *
-import http
+from common import myhttp
 
 
 class ITest(unittest.TestCase):
@@ -26,6 +26,7 @@ class ITest(unittest.TestCase):
     def execute_case(cls, case_id):
         VALUES = {}  # 用户全局变量
         case = Case.objects.filter(case=case_id).first()
+        # todo 按照用例-步骤-api顺序执行测试
         url = case.url
         method = case.method
         headers_str = case.headers
@@ -45,7 +46,7 @@ class ITest(unittest.TestCase):
                     data[l.split('=')[0]] = l.split('=')[1]
             else:
                 data = body_str
-        client = http.client(url=url, method=method, headers=headers, data=data)
+        client = myhttp.client(url=url, method=method, headers=headers, data=data)
         if check_str:
             list = check_str.split('&')
             for l in list:
@@ -67,9 +68,9 @@ class ITest(unittest.TestCase):
 if __name__ == '__main__':
     task_id = sys.argv[1]
     task_time = sys.argv[2]
-    suite = unittest.defaultTestLoader.discover('./index/', pattern='run.py')
+    suite = unittest.defaultTestLoader.discover('./ceshi_manage/', pattern='run.py')
     time_str = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-    fp = open('./static/report/' + time_str + '.html', 'wb')
+    fp = open('./static/reports/' + time_str + '.html', 'wb')
     HTMLTestRunnerCN.HTMLTestRunner(stream=fp, title='接口自动化测试报告').run(suite)
-    History.objects.create(time=task_time, report='/static/report/' + time_str + '.html', status=1, task_id=task_id)
+    Report.objects.create(time=task_time, file_name='/static/reports/' + time_str + '.html', status=1, task_id=task_id)
     # unittest.TextTestRunner().run(suite)
