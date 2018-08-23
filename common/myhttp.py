@@ -59,7 +59,8 @@ class client():
 
     def check_node_exist(self, kargs):
         result = self.__get_value_from_path(kargs.get('node_path', None))
-        assert result is not None, self.__format(kargs.get('message', None), kargs.get('node_path', None) + ' 存在', result)
+        assert result is not None, self.__format(kargs.get('message', None), kargs.get('node_path', None) + ' 存在',
+                                                 result)
 
     def check_nodeText_equals(self, kargs):
         text = None
