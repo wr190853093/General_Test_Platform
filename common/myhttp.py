@@ -20,8 +20,9 @@ class client():
         self.data = data
 
     def send(self):
+
         if self.method == 1:
-            self.response = requests.request('POST', url=self.url, headers=self.headers, data=self.data)
+            self.response = requests.request('POST', url=self.url, headers=self.headers, data=self.data.encode('utf-8'))
         elif self.method == 0:
             self.response = requests.request('GET', url=self.url, headers=self.headers, params=self.data)
         else:
@@ -38,17 +39,18 @@ class client():
         return "[%s] 预期结果:%s，实际结果:%s" % (message, expected, actual)
 
     def __get_value_from_path(self, node_path):
-        if self.response:
+        if self.response.json():
             object = jsonpath.jsonpath(self.response.json(), node_path)
             if object:
                 return object
         return None
 
     def check_status_code(self, kargs):
-        if self.response:
+        if self.response.status_code:
             result = self.response.status_code
             assert result == kargs.get('code', None), self.__format(kargs.get('message', None), kargs.get('code', None),
                                                                     result)
+            # assert str(result) == kargs, self.__format('check_status_code', kargs, result)
         else:
             assert False, '响应报文为空'
 
@@ -58,7 +60,9 @@ class client():
                                                                result)
 
     def check_node_exist(self, kargs):
+        # print(kargs.get('node_path', None))
         result = self.__get_value_from_path(kargs.get('node_path', None))
+        # print(result)
         assert result is not None, self.__format(kargs.get('message', None), kargs.get('node_path', None) + ' 存在',
                                                  result)
 

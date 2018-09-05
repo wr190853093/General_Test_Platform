@@ -8,7 +8,7 @@ error_code = '30006'  message = '所选API不存在。'
 error_code = '30007'  message = '所选步骤不存在。'
 error_code = '30008'  message = '请先删除最后一个步骤。'
 error_code = '30009'  message = '任务名称重复。'
-error_code = '30010'  message = '所选环境不存在。'
+error_code = '30010'  message = '所选参数错误。'
 error_code = '30011'  message = '所选任务不存在。'
 error_code = '30012'  message = '无可执行的测试用例。'
 error_code = '30013'  message = '超时无法获取报告地址。'
@@ -319,7 +319,12 @@ def add_step(request):
                     headers = jsonpath.jsonpath(para, expr='$.headers')
                     body = jsonpath.jsonpath(para, expr='$.body')
                     check = jsonpath.jsonpath(para, expr='$.check')
-
+                    if not headers:
+                        headers = None
+                    if not body:
+                        body = None
+                    if not check:
+                        check = None
                     step = Step(name=name, order=order, check=check, case=case.first(), api=api.first(),
                                 headers=headers, body=body)
                     step.save()
@@ -450,30 +455,39 @@ def create_task(request):
 
     name = request.POST.get('name', None)
     desc = request.POST.get('desc', None)
-    cases = request.POST.get('cases', None)
-    environment_id = request.POST.get('environmentid', None)
-    if name and cases and environment_id:
+    para = request.POST.get('para', None)
+    # para格式{"para":[{"case_id":1,"step_id":1,"environment_id":1},{"case_id":2,"step_id":2,"environment":2}]}
+    # cases = request.POST.get('cases', None)
+    # environment_id = request.POST.get('environmentid', None)
+    if name and para:
         if not Task.objects.filter(name=name).exists():
-            environment = Environment.objects.filter(id=environment_id, is_del=1)
-            if environment.exists():
-                task = Task(name=name, desc=desc, environment=environment.first())
+            try:
+                para_list = json.loads(para).get("para")
+                task = Task(name=name, desc=desc)
                 task.save()
-
-                cases_list = cases.split(',')
-                for c_id in cases_list:
-                    c = Case.objects.filter(id=c_id)
-                    if c.exists():
-                        task.case.add(c.first())
+                for para in para_list:
+                    case_id = para.get("case_id")
+                    environment_id = para.get("environment_id")
+                    step_id = para.get("step_id")
+                    environment = Environment.objects.filter(id=environment_id, is_del=1)
+                    case = Case.objects.filter(id=case_id)
+                    step = Step.objects.filter(id=step_id)
+                    if environment.exists() and case.exists() and step.exists():
+                        task_env = TaskEnvironment(task=task, environment=environment.first(), case=case.first(), step=step.first())
+                        task_env.save()
+                        # task.case.add(case.first())
+                        # task.environment.add(environment.first())
+                        # task.step.add(step.first())
+                        error_code = '0'
+                        message = '新建任务成功.'
                     else:
-                        error_code = '30003'
-                        message = '所选用例不存在。'
-                        break
-                else:
-                    error_code = '0'
-                    message = '新建任务成功.'
-            else:
-                error_code = '30010'
-                message = '所选环境不存在。'
+                        error_code = '30010'
+                        message = '所选参数错误。'
+                        task.delete()
+            except Exception as e:
+                print(e)
+                error_code = '99999'
+                message = '数据操作异常。'
         else:
             error_code = '30009'
             message = '任务名称重复.'
@@ -502,31 +516,33 @@ def edit_task(request):
     task_id = request.POST.get('taskid', None)
     name = request.POST.get('name', None)
     desc = request.POST.get('desc', None)
-    cases = request.POST.get('cases', None)
-    environment_id = request.POST.get('environmentid', None)
-    if task_id and name and cases and environment_id:
+    para = request.POST.get('para', None)
+    if task_id and name and para:
         task = Task.objects.filter(id=task_id)
         if task.exists():
             if not Task.objects.filter(name=name).exclude(id=task_id).exists():
-                environment = Environment.objects.filter(id=environment_id, is_del=1)
-                if environment.exists():
-                    task.update(name=name, desc=desc, environment=environment.first())
+                try:
+                    para_list = json.loads(para).get("para")
+                    for para in para_list:
+                        case_id = para.get("case_id")
+                        environment_id = para.get("environment_id")
+                        step_id = para.get("step_id")
+                        environment = Environment.objects.filter(id=environment_id, is_del=1)
+                        case = Case.objects.filter(id=case_id)
+                        step = Step.objects.filter(id=step_id)
+                        if environment.exists() and case.exists() and step.exists():
 
-                    cases_list = cases.split(',')
-                    for c_id in cases_list:
-                        c = Case.objects.filter(id=c_id)
-                        if c.exists():
-                            task.case.add(c.first())
+                            task.update(name=name, desc=desc, case=case.first(),
+                                        environment=environment.first(), step=step.first())
+                            error_code = '0'
+                            message = '编辑任务成功.'
                         else:
-                            error_code = '30003'
-                            message = '所选用例不存在。'
-                            break
-                    else:
-                        error_code = '0'
-                        message = '编辑任务成功.'
-                else:
-                    error_code = '30010'
-                    message = '所选环境不存在。'
+                            error_code = '30010'
+                            message = '所选参数错误。'
+                except Exception as e:
+                    print(e)
+                    error_code = '99999'
+                    message = '数据操作异常。'
             else:
                 error_code = '30009'
                 message = '任务名称重复.'
@@ -557,22 +573,20 @@ def run_task(request):
 
     task_id = request.POST.get('taskid', None)
     if task_id:
-        task = Task.objects.filter(id=task_id)
+        task = TaskEnvironment.objects.filter(task_id=task_id)
         if task.exists():
-            task = task.first()
             # 获取到所有测试用例，判断是否存在，是否可运行
-            cases = task.case.all()
             case = []
             case_list_str = ''
-            env_id = task.environment.id
-            for ca in cases:
-                if ca.status == 1:
+            for t in task:
+                ca = t.case
+                if ca.status == 1 and (str(ca.id) not in case):
                     case.append(str(ca.id))
                     case_list_str = ','.join(case)
             if len(case) > 0:
                 time_temp = time.time()
-                print("python ./common/run.py %s %f %s %s" % (task_id, time_temp, case_list_str, env_id))
-                status = os.system("python ./common/run.py %s %f %s %s" % (task_id, time_temp, case_list_str, env_id))
+                print("python ./common/run.py %s %f %s" % (task_id, time_temp, case_list_str))
+                status = os.system("python ./common/run.py %s %f %s" % (task_id, time_temp, case_list_str))
                 if status == 0:
                     # 轮询任务历史表中知否存在报告信息
                     flag = 0

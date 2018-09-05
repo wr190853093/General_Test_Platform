@@ -81,7 +81,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'GTP',
         'USER': 'root',
-        'PASSWORD': '123456'
+        'PASSWORD': '123456',
+        'use_unicode': True,
+        'charset': 'utf8'
     }
 }
 
