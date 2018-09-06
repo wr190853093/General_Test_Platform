@@ -1,3 +1,6 @@
+import json
+
+
 # 判断字符串是否为有效ip（可以传带端口的字符串）
 def validate_ip(ip_str):
     if ip_str.find(':'):
@@ -45,6 +48,17 @@ def getkwargs(data={}):
 
     return kwargs
 
+
+# 将字符串中{{}}参数处理后，返回字典
+def replacetodic(str, dic):
+    start_index = str.find('{{')
+    end_index = str.find('}}')
+    while start_index != -1:
+        str = str.replace(str[start_index:end_index + 2], dic.get(str[start_index + 2:end_index]))
+        start_index = str.find('{{')
+        end_index = str.find('}}')
+    result = json.loads(str)
+    return result
 
 if __name__ == '__main__':
     print(validate_ip('192.13.13.1232'))

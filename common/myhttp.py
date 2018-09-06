@@ -106,13 +106,13 @@ class client():
         else:
             assert False, self.__format(kargs.get('message', None), kargs.get('count', None), None)
 
-    def transfer(self, path):
+    def transfer(self, path, i):
         value = None
         try:
             json_object = self.response.json()
             object = jsonpath.jsonpath(json_object, path)
             if object:
-                value = object[0]
+                value = object[i]
         except Exception as e:
             print(e)
 

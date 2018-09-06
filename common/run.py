@@ -11,6 +11,7 @@ django.setup()
 
 from ceshi_manage.models import *
 from common import myhttp
+from common import util
 
 
 class ITest(unittest.TestCase):
@@ -28,14 +29,11 @@ class ITest(unittest.TestCase):
 
     @classmethod
     def execute_case(cls, case_id, task_id):
-        print(case_id,task_id)
         VALUES = {}  # 用户全局变量
         case = Case.objects.filter(id=case_id).first()
         # todo 按照用例-步骤-api顺序执行测试
         steps = Step.objects.filter(case=case, is_del=1).order_by('order')
-        print(steps)
         for step in steps:
-            print(step.id)
             api = step.api
             environment = TaskEnvironment.objects.filter(task_id=task_id, step=step, case=case).first().environment
             url = 'https://' + environment.host + '/' + api.path
@@ -44,16 +42,33 @@ class ITest(unittest.TestCase):
             body_str = step.body
             check_str = step.check
             if headers_str:
-                headers = json.loads(headers_str)
+                # start_index = headers_str.find('{{')
+                # end_index = headers_str.find('}}')
+                # while start_index != -1:
+                #     headers_str = headers_str.replace(headers_str[start_index:end_index + 2],
+                #                                       VALUES.get(headers_str[start_index + 2:end_index]))
+                #     start_index = headers_str.find('{{')
+                #     end_index = headers_str.find('}}')
+                # headers = json.loads(headers_str)
+                headers = util.replacetodic(headers_str, VALUES)
             else:
                 headers = {}
 
             if body_str:
                 if headers.get('content-type', None) == 'application/x-www-form-urlencoded' \
-                        or headers.get('content-type', None) == 'multipart/form-data':
-                    data = json.loads(body_str)
+                        or headers.get('content-type', None) == 'multipart/form-data' or method == 0:
+                    # start_index = body_str.find('{{')
+                    # end_index = body_str.find('}}')
+                    # while start_index != -1:
+                    #     body_str = body_str.replace(body_str[start_index:end_index + 2],
+                    #                                 VALUES.get(body_str[start_index + 2:end_index]))
+                    #     start_index = body_str.find('{{')
+                    #     end_index = body_str.find('}}')
+                    # data = json.loads(body_str)
+                    data = util.replacetodic(body_str, VALUES)
                 else:
                     data = body_str
+
             client = myhttp.client(url=url, method=method, headers=headers, data=data)
             client.send()
             if check_str:
@@ -62,14 +77,14 @@ class ITest(unittest.TestCase):
                     try:
                         CHECK_FUNC = "client.{method_name}(paras)"
                         if method_name == 'transfer':
-                            VALUES[paras.get('name', None)] = client.transfer(paras.get('path', None))
+                            VALUES[paras.get('name', None)] = client.transfer(paras.get('path', None),
+                                                                              paras.get('index', None))
                         else:
                             eval(CHECK_FUNC.format(method_name=method_name, paras=paras))
                     except Exception as e:
                         assert False, '检查点函数%s执行异常：%s' % (method_name, str(e))
                     continue
             continue
-
 
 
 if __name__ == '__main__':
