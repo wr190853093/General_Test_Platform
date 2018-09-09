@@ -15,10 +15,10 @@ from common import util
 
 
 class ITest(unittest.TestCase):
-    # case_list = sys.argv[3].split(',')
-    # task_id = sys.argv[1]
-    case_list = ['1', '2']
-    task_id = '11'
+    case_list = sys.argv[3].split(',')
+    task_id = sys.argv[1]
+    # case_list = ['1', '2']
+    # task_id = '11'
     for case_id in case_list:
         case = Case.objects.filter(id=case_id).first()
         FUNC_TEMPLATE = '''def {test_id}(self):
@@ -88,10 +88,10 @@ class ITest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # task_id = sys.argv[1]
-    # task_time = sys.argv[2]
-    task_id = 11
-    task_time = 1534948993.567155
+    task_id = sys.argv[1]
+    task_time = sys.argv[2]
+    # task_id = 11
+    # task_time = 1534948993.567155
     suite = unittest.defaultTestLoader.discover('./common/', pattern='run.py')
     time_str = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
     fp = open('./static/reports/' + time_str + '.html', 'wb')
